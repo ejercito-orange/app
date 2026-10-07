@@ -1,0 +1,2966 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ejército de Orange</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+:root {
+  --bg: #16100a;
+  --card: #231a10;
+  --border: #4a3824;
+  --text: #ece3d2;
+  --muted: #a8926f;
+  --accent: #8a5a2e;
+  --accent2: #f2954a;
+  --danger: #ff6b6b;
+}
+* { box-sizing: border-box; }
+body {
+  position: relative;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+  padding: 16px;
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url('officers.webp');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  opacity: 0.13;
+  z-index: -1;
+  pointer-events: none;
+}
+h1 {
+  font-size: 1.3rem;
+  margin: 0 0 12px 0;
+  color: var(--accent);
+  text-align: center;
+}
+.search-box {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+.search-box:focus { outline: none; border-color: var(--accent); }
+.macro-help-btn {
+  display: inline-block;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.72rem;
+  padding: 5px 12px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.macro-help-btn:hover {
+  color: var(--text);
+  border-color: var(--muted);
+}
+.macro-help-panel {
+  margin-bottom: 14px;
+}
+.macro-help-panel.hidden { display: none; }
+.macro-help-frame-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  aspect-ratio: 16 / 9;
+  margin: 0 auto;
+  background: #000;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.macro-help-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.tab {
+  position: relative;
+  overflow: hidden;
+  padding: 5px 12px;
+  border-radius: 0;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.78rem;
+  user-select: none;
+  white-space: nowrap;
+  transition: color 0.25s, background 0.25s, box-shadow 0.25s, letter-spacing 0.25s;
+}
+.tab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(242,149,74,0.35), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+.tab:hover::before {
+  left: 140%;
+  transition: left 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.tab:hover {
+  color: #ffcf80;
+  background: #26210f;
+  letter-spacing: 0.03em;
+  box-shadow:
+    inset 0 0 0 1px rgba(242,149,74,0.5),
+    inset 0 0 14px rgba(242,149,74,0.25),
+    0 0 8px rgba(242,149,74,0.3);
+}
+.tab.active {
+  background: var(--accent2);
+  color: #1a1109;
+  border-color: var(--accent2);
+  font-weight: 600;
+}
+.count {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-bottom: 10px;
+}
+.category-title {
+  font-size: 1rem;
+  color: var(--accent);
+  font-weight: 700;
+  margin: 18px 0 8px 0;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+.category-title.pd { color: var(--accent2); }
+.sub-title {
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-weight: 600;
+  margin: 10px 0 6px 0;
+}
+.rules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px;
+  margin-bottom: 4px;
+}
+@media (min-width: 1401px) {
+  .rules-grid {
+    grid-template-columns: repeat(7, 1fr);
+  }
+}
+@media (max-width: 700px) {
+  .rules-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  body { padding: 10px; }
+  h1 { font-size: 1.05rem; }
+  .tab { font-size: 0.7rem; padding: 4px 10px; }
+  .rule-title { font-size: 0.8rem; }
+  .rule-desc, .rule-punish { font-size: 0.72rem; }
+  .nav-btn { font-size: 0.72rem; padding: 8px 10px; }
+}
+.rule {
+  position: relative;
+  overflow: hidden;
+  background: rgba(26, 29, 36, 0.55);
+  backdrop-filter: blur(3px);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background 0.25s, box-shadow 0.25s;
+}
+.rule::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(242,149,74,0.25), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+.rule:hover::before {
+  left: 140%;
+  transition: left 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.rule:hover {
+  background: rgba(38, 33, 15, 0.75);
+  box-shadow:
+    inset 0 0 0 1px rgba(242,149,74,0.4),
+    inset 0 0 14px rgba(242,149,74,0.2),
+    0 0 8px rgba(242,149,74,0.25);
+}
+.rule-desc {
+  font-size: 0.78rem;
+  color: var(--text);
+  margin-bottom: 6px;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.rule-punish {
+  font-size: 0.74rem;
+  color: var(--danger);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.rule.expanded .rule-desc,
+.rule.expanded .rule-punish {
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+.expand-hint {
+  font-size: 0.65rem;
+  color: var(--muted);
+  margin-top: 4px;
+  font-style: italic;
+}
+.macro-label {
+  font-weight: 700;
+  color: var(--accent2);
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+  letter-spacing: 0.02em;
+}
+.macro-text {
+  font-size: 0.76rem;
+  color: var(--text);
+  line-height: 1.4;
+  font-family: 'Courier New', monospace;
+}
+.macro-rule.copied {
+  background: #1e3a2e;
+  border-color: #3ea86b;
+}
+.pd-banner {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20px;
+  width: 100vw;
+  margin: -16px 0 0 calc(-50vw + 50%);
+  padding: 14px 10px;
+  min-height: 130px;
+  background: var(--bg);
+}
+.pd-banner-left {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.pd-banner-photo {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 65%;
+  object-fit: cover;
+  object-position: right 40%;
+  z-index: 0;
+  pointer-events: none;
+}
+@media (max-width: 700px) {
+  .pd-banner-photo {
+    width: 60%;
+    opacity: 0.55;
+    object-position: right center;
+    mask-image: linear-gradient(to right, transparent, black 55%);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 55%);
+  }
+}
+.pd-banner-left img {
+  height: 100px;
+  width: 100px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.pd-banner-text {
+  font-family: 'Bebas Neue', -apple-system, sans-serif;
+  line-height: 0.95;
+  text-align: left;
+}
+.pd-banner-text .line1 {
+  font-size: 2.2rem;
+  color: #ece3d2;
+  letter-spacing: 0.04em;
+}
+.pd-banner-text .line2 {
+  font-size: 3.2rem;
+  color: #f2954a;
+  letter-spacing: 0.08em;
+}
+
+/* ---- Macros de Instrucción bloqueadas ---- */
+.macro-locked-card {
+  position: relative;
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid rgba(242,149,74,0.35);
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  padding: 18px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.macro-locked-title {
+  font-weight: 700;
+  color: var(--accent2);
+  font-size: 0.92rem;
+  margin-bottom: 4px;
+}
+.macro-locked-sub {
+  color: var(--muted);
+  font-size: 0.78rem;
+  margin-bottom: 12px;
+}
+.macro-locked-btn {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  background: #2a2015;
+  border: 1px solid var(--accent2);
+  color: var(--accent2);
+  padding: 8px 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+.macro-locked-btn:hover {
+  background: var(--accent2);
+  color: #1a1109;
+}
+
+/* ---- Modal de código de instructor ---- */
+.instructor-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 500;
+}
+.instructor-modal-overlay.hidden { display: none; }
+.instructor-modal-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 22px;
+  width: 100%;
+  max-width: 320px;
+  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+}
+.instructor-modal-title {
+  font-weight: 700;
+  color: var(--accent2);
+  font-size: 1rem;
+  text-align: center;
+  margin-bottom: 4px;
+}
+.instructor-modal-sub {
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-align: center;
+  margin-bottom: 14px;
+}
+.instructor-modal-box input {
+  width: 100%;
+  background: #12141a;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 12px;
+  font-size: 1rem;
+  text-align: center;
+  letter-spacing: 2px;
+}
+.instructor-modal-box input:focus {
+  outline: none;
+  border-color: var(--accent2);
+}
+.instructor-modal-error {
+  color: var(--danger, #ff6b6b);
+  font-size: 0.75rem;
+  text-align: center;
+  min-height: 16px;
+  margin-top: 8px;
+}
+.instructor-modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+.instructor-btn {
+  flex: 1;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  background: #2a2015;
+  color: var(--text);
+  font-size: 0.85rem;
+  cursor: pointer;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+.instructor-btn-primario {
+  background: var(--accent2);
+  border-color: var(--accent2);
+  color: #1a1109;
+  font-weight: 700;
+}
+.instructor-btn-primario:hover { filter: brightness(1.08); }
+.instructor-btn-secundario:hover { border-color: var(--accent2); color: var(--accent2); }
+
+/* ---- Noticias (feed) ---- */
+.noticias-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.noticias-publicar-btn {
+  flex: none;
+  padding: 8px 14px;
+  border-radius: 0;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+  border: 1px solid var(--accent2);
+  background: transparent;
+  color: var(--accent2);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.noticias-publicar-btn:hover { background: var(--accent2); color: #1a1109; }
+.noticias-composer {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.noticias-composer.hidden { display: none; }
+.noticias-composer select,
+.noticias-composer textarea,
+.noticias-composer input[type="text"] {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-family: inherit;
+  resize: vertical;
+}
+.noticias-composer textarea {
+  min-height: 200px;
+  line-height: 1.5;
+}
+.noticias-composer select:focus,
+.noticias-composer textarea:focus,
+.noticias-composer input[type="text"]:focus { outline: none; border-color: var(--accent); }
+.noticias-formato-ayuda {
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.noticias-composer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.noticias-composer-error {
+  flex: 1;
+  color: var(--danger);
+  font-size: 0.75rem;
+}
+.noticias-btn-primario,
+.noticias-btn-secundario {
+  padding: 7px 14px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: #2a2015;
+  color: var(--text);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.noticias-btn-primario {
+  background: var(--accent2);
+  border-color: var(--accent2);
+  color: #1a1109;
+  font-weight: 700;
+}
+.noticias-btn-primario:hover { filter: brightness(1.08); }
+.noticias-btn-secundario:hover { border-color: var(--accent2); color: var(--accent2); }
+.noticias-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.noticia-card {
+  position: relative;
+  background: rgba(26, 29, 36, 0.65);
+  backdrop-filter: blur(3px);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+}
+.noticia-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.noticia-division {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(212, 146, 42, 0.18);
+  color: var(--accent2);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.noticia-borrar-btn {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 2px 6px;
+}
+.noticia-borrar-btn:hover { color: var(--danger); }
+.noticia-autor {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.noticia-texto {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  margin-bottom: 8px;
+}
+.noticia-texto code.noticia-inlinecode {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85em;
+}
+.noticia-texto pre.noticia-codeblock {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85em;
+  margin: 4px 0;
+}
+.noticia-texto pre.noticia-codeblock code { background: none; border: none; padding: 0; }
+.noticia-texto .noticia-quote {
+  border-left: 3px solid var(--accent2);
+  padding: 2px 10px;
+  margin: 4px 0;
+  color: var(--muted);
+}
+.noticia-texto .noticia-spoiler {
+  background: #4a4d57;
+  color: transparent;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: color 0.1s;
+}
+.noticia-texto .noticia-spoiler.revelado {
+  background: rgba(255,255,255,0.08);
+  color: inherit;
+}
+.noticia-imagen {
+  width: 100%;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  display: block;
+}
+.noticia-acciones {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.noticia-like-btn,
+.noticia-comentar-toggle {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.82rem;
+  padding: 4px 2px;
+}
+.noticia-like-btn.liked { color: var(--accent2); font-weight: 700; }
+.noticia-like-btn:hover,
+.noticia-comentar-toggle:hover { color: var(--text); }
+.noticia-comentarios { margin-top: 10px; display: none; }
+.noticia-comentarios.open { display: block; }
+.noticia-comentario {
+  font-size: 0.78rem;
+  color: var(--text);
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.noticia-comentario b { color: var(--accent2); }
+.noticia-comentario-form {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+.noticia-comentario-form input {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.78rem;
+}
+.noticia-comentario-form input:focus { outline: none; border-color: var(--accent); }
+.noticia-comentario-form button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--accent2);
+  background: transparent;
+  color: var(--accent2);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+.noticia-comentario-form button:hover { background: var(--accent2); color: #1a1109; }
+
+@media (max-width: 700px) {
+  .pd-banner { gap: 12px; }
+  .pd-banner-left img { height: 70px; width: 70px; }
+  .pd-banner-text .line1 { font-size: 1.5rem; }
+  .pd-banner-text .line2 { font-size: 2.2rem; }
+}
+.pd-footer {
+  position: relative;
+  margin-top: 30px;
+  padding: 20px 10px 16px 10px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.6;
+  z-index: 1;
+}
+.rule-header {
+  margin-bottom: 4px;
+}
+.rule-header .code {
+  margin-right: 6px;
+}
+.code {
+  font-weight: 700;
+  color: var(--accent2);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+.rule-title {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+.rule-punish b { color: var(--danger); }
+.hidden { display: none; }
+.empty-msg {
+  text-align: center;
+  color: var(--muted);
+  padding: 30px;
+  font-size: 0.9rem;
+}
+
+/* --- Navegación principal por secciones --- */
+.main-nav {
+  display: flex;
+  width: 100vw;
+  margin: 0 0 18px calc(-50vw + 50%);
+}
+.nav-btn {
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 0;
+  border: 1px solid var(--border);
+  border-top: none;
+  margin-left: -1px;
+  background: #2a2015;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.25s, background 0.25s, box-shadow 0.25s, letter-spacing 0.25s;
+}
+.nav-btn:first-child {
+  margin-left: 0;
+}
+.nav-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(242,149,74,0.35), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+.nav-btn:hover::before {
+  left: 140%;
+  transition: left 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.nav-btn:hover {
+  color: #ffcf80;
+  background: #26210f;
+  letter-spacing: 0.12em;
+  box-shadow:
+    inset 0 0 0 1px rgba(242,149,74,0.5),
+    inset 0 0 18px rgba(242,149,74,0.25),
+    0 0 10px rgba(242,149,74,0.35);
+}
+.nav-btn.active {
+  background: var(--accent2);
+  color: #1a1109;
+  border-color: var(--accent2);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.3),
+    inset 0 0 14px rgba(255,255,255,0.15),
+    0 0 10px rgba(242,149,74,0.5);
+}
+.nav-btn.active::before {
+  left: 140%;
+  transition: left 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.app-section { display: none; }
+.app-section.active { display: block; }
+
+.tz-back-btn {
+  display: block;
+  margin: 0 auto 10px auto;
+  background: #2a2015;
+  border: 1px solid #4a3824;
+  color: #ece3d2;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.tz-iframe {
+  width: 100%;
+  height: 80vh;
+  border: 1px solid #4a3824;
+  border-radius: 0;
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  background: var(--bg);
+}
+.academia-placeholder {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  color: var(--muted);
+  padding: 60px 20px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  font-size: 0.95rem;
+  min-height: 320px;
+  background: var(--bg);
+}
+.academia-placeholder-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  opacity: 0.13;
+  pointer-events: none;
+  z-index: 0;
+}
+.academia-placeholder-text {
+  position: relative;
+  z-index: 1;
+}
+.academia-schedule {
+  position: relative;
+  z-index: 1;
+  text-align: left;
+}
+.academia-schedule-title {
+  font-size: 1.05rem;
+  color: var(--accent2);
+  font-weight: 700;
+  text-align: center;
+  margin: 0 0 4px 0;
+}
+.academia-schedule-subtitle {
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-align: center;
+  margin: 0 0 16px 0;
+}
+.turno-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.turno-card {
+  position: relative;
+  overflow: hidden;
+  background: rgba(26, 29, 36, 0.55);
+  backdrop-filter: blur(3px);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: background 0.25s, box-shadow 0.25s;
+}
+.turno-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(242,149,74,0.25), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+.turno-card:hover::before {
+  left: 140%;
+  transition: left 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.turno-card:hover {
+  background: rgba(38, 33, 15, 0.65);
+  box-shadow:
+    inset 0 0 0 1px rgba(242,149,74,0.4),
+    inset 0 0 14px rgba(242,149,74,0.2),
+    0 0 8px rgba(242,149,74,0.25);
+}
+.turno-time {
+  font-weight: 700;
+  color: var(--accent2);
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+}
+.turno-row {
+  font-size: 0.8rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+.turno-row b {
+  color: var(--muted);
+  font-weight: 600;
+}
+.turno-row.turno-days {
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(242,149,74,0.25);
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.recruit-card {
+  border-color: rgba(77, 127, 255, 0.5);
+}
+.recruit-card .turno-time {
+  color: #7ea6ff;
+}
+.attendance-card {
+  border-color: rgba(74, 222, 128, 0.5);
+}
+.attendance-card .turno-time {
+  color: #4ade80;
+}
+.attendance-card:hover {
+  box-shadow:
+    inset 0 0 0 1px rgba(74,222,128,0.5),
+    inset 0 0 14px rgba(74,222,128,0.15),
+    0 0 8px rgba(74,222,128,0.25);
+}
+.evaluaciones-card {
+  border-color: rgba(167, 139, 250, 0.5);
+}
+.evaluaciones-card .turno-time {
+  color: #a78bfa;
+}
+.evaluaciones-card:hover {
+  box-shadow:
+    inset 0 0 0 1px rgba(167,139,250,0.5),
+    inset 0 0 14px rgba(167,139,250,0.15),
+    0 0 8px rgba(167,139,250,0.25);
+}
+.temario-card {
+  border-color: rgba(212, 146, 42, 0.5);
+}
+.temario-card .turno-time {
+  color: var(--accent);
+}
+.temario-card:hover {
+  box-shadow:
+    inset 0 0 0 1px rgba(138,90,46,0.5),
+    inset 0 0 14px rgba(138,90,46,0.15),
+    0 0 8px rgba(138,90,46,0.25);
+}
+.admin-card {
+  display: block;
+  text-decoration: none;
+  border-color: rgba(139, 143, 154, 0.5);
+}
+.admin-card .turno-time {
+  color: #b8bcc6;
+}
+.admin-card:hover {
+  box-shadow:
+    inset 0 0 0 1px rgba(139,143,154,0.5),
+    inset 0 0 14px rgba(139,143,154,0.15),
+    0 0 8px rgba(139,143,154,0.25);
+}
+.academia-two-col {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+.academia-col-left {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.roster-card {
+  background: rgba(26, 29, 36, 0.55);
+  backdrop-filter: blur(3px);
+  border: 1px solid rgba(242,149,74,0.35);
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  padding: 16px 18px;
+  height: 100%;
+}
+.roster-title {
+  font-family: 'Bebas Neue', -apple-system, sans-serif;
+  font-size: 1.25rem;
+  letter-spacing: 0.03em;
+  color: var(--accent2);
+  text-align: center;
+  margin-bottom: 14px;
+}
+.roster-group { margin-bottom: 11px; }
+.roster-group:last-child { margin-bottom: 0; }
+.roster-role {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin-bottom: 3px;
+}
+.roster-names {
+  font-size: 0.88rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+.roster-columns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+@media (max-width: 480px) {
+  .roster-columns { grid-template-columns: 1fr; }
+}
+.roster-admin-row {
+  margin-top: 18px;
+}
+.temario-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  position: relative;
+  z-index: 1;
+}
+@media (max-width: 700px) {
+  .temario-grid { grid-template-columns: 1fr; }
+}
+.modulo-card {
+  background: rgba(26, 29, 36, 0.55);
+  backdrop-filter: blur(3px);
+  border: 1px solid rgba(138,90,46,0.35);
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  padding: 16px 18px;
+}
+.modulo-letra {
+  display: inline-block;
+  font-family: 'Bebas Neue', -apple-system, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: var(--bg);
+  background: var(--accent);
+  padding: 2px 10px;
+  border-radius: 3px;
+  margin-bottom: 8px;
+}
+.modulo-titulo {
+  font-family: 'Bebas Neue', -apple-system, sans-serif;
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+  color: var(--accent2);
+  margin-bottom: 10px;
+}
+.modulo-objetivo-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.modulo-objetivo-texto {
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+@media (max-width: 700px) {
+  .academia-two-col { grid-template-columns: 1fr; }
+}
+.attendance-frame {
+  min-height: 320px;
+  padding: 0;
+}
+.attendance-iframe {
+  display: block;
+  width: 100%;
+  height: 640px; /* fallback inicial hasta que llegue el primer postMessage con la altura real */
+  border: none;
+  background: #1a1109;
+  transition: height 0.15s ease;
+}
+.evaluaciones-iframe {
+  display: block;
+  width: 100%;
+  height: 640px; /* fallback inicial hasta que llegue el primer postMessage con la altura real */
+  border: none;
+  background: #1a1109;
+  transition: height 0.15s ease;
+}
+.evaluaciones-tabs {
+  display: flex;
+  gap: 3px;
+  margin: 0 0 -1px;
+  padding: 0 2px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.evaluaciones-tabs::-webkit-scrollbar { height: 4px; }
+.eval-tab {
+  flex-shrink: 0;
+  white-space: nowrap;
+  background: rgba(15,17,21,0.75);
+  border: 1px solid rgba(242,149,74,0.3);
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  color: var(--muted);
+  padding: 9px 18px;
+  font-size: 0.90rem;
+  font-weight: 750;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+}
+.eval-tab.active {
+  position: relative;
+  z-index: 2;
+  border-color: rgba(242,149,74,0.5);
+  color: var(--accent2);
+  background: rgba(5,7,10,0.55);
+}
+.eval-tab:hover { color: var(--text); }
+.recruit-card:hover {
+  box-shadow:
+    inset 0 0 0 1px rgba(134,239,172,0.5),
+    inset 0 0 14px rgba(134,239,172,0.2),
+    0 0 8px rgba(134,239,172,0.3);
+}
+.map-trigger {
+  color: var(--accent2);
+  font-weight: 700;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.map-trigger:hover {
+  color: #ffcf80;
+}
+.academia-updated {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-style: italic;
+  margin-top: 16px;
+}
+
+/* --- Visor de mapa (Piso 2) estilo HUD --- */
+.academia-map {
+  display: none;
+  position: relative;
+  z-index: 2;
+}
+.academia-map.active {
+  display: block;
+}
+/* Cuando se abre el mapa: se oculta todo lo demás (banner, nav) y el
+   contenedor de Academia pasa a ocupar toda la pantalla, para que solo se
+   vea el mapa y el botón de "VOLVER". */
+body.mapa-fullscreen .pd-banner,
+body.mapa-fullscreen .main-nav {
+  display: none;
+}
+body.mapa-fullscreen .academia-placeholder {
+  border: none;
+  padding: 16px;
+  min-height: 100vh;
+  background: var(--bg);
+}
+.map-back-btn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding: 6px 16px;
+  background: rgba(26, 29, 36, 0.75);
+  border: 1px solid var(--accent2);
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+  color: var(--accent2);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+.map-back-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(242,149,74,0.35), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+.map-back-btn:hover::before {
+  left: 140%;
+  transition: left 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.map-back-btn:hover {
+  color: #ffcf80;
+  box-shadow:
+    inset 0 0 0 1px rgba(242,149,74,0.5),
+    inset 0 0 14px rgba(242,149,74,0.2),
+    0 0 8px rgba(242,149,74,0.3);
+}
+.map-frame {
+  position: relative;
+  overflow: hidden;
+  background: rgba(5, 7, 10, 0.35);
+  backdrop-filter: blur(2px);
+  border: 1px solid rgba(242,149,74,0.5);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,0.4),
+    inset 0 0 40px rgba(242,149,74,0.06);
+}
+.map-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,0) 0px,
+    rgba(0,0,0,0) 2px,
+    rgba(0,0,0,0.08) 3px
+  );
+  mix-blend-mode: overlay;
+  opacity: 0.5;
+}
+.map-frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+  opacity: 0.85;
+  filter: saturate(0.85) contrast(1.05);
+}
+.map-corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  z-index: 2;
+  pointer-events: none;
+}
+.map-corner-tl { top: 8px; left: 8px; border-top: 2px solid var(--accent2); border-left: 2px solid var(--accent2); }
+.map-corner-tr { top: 8px; right: 8px; border-top: 2px solid var(--accent2); border-right: 2px solid var(--accent2); }
+.map-corner-bl { bottom: 8px; left: 8px; border-bottom: 2px solid var(--accent2); border-left: 2px solid var(--accent2); }
+.map-corner-br { bottom: 8px; right: 8px; border-bottom: 2px solid var(--accent2); border-right: 2px solid var(--accent2); }
+.map-hud-tag {
+  position: absolute;
+  top: 14px;
+  left: 42px;
+  z-index: 2;
+  background: rgba(5, 7, 10, 0.75);
+  border: 1px solid var(--accent2);
+  color: var(--accent2);
+  font-family: 'Courier New', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  padding: 4px 10px;
+}
+.map-marker-wrap {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  margin: -28px 0 0 -28px;
+  z-index: 2;
+  pointer-events: none;
+}
+.map-marker-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.32) 55%, rgba(0,0,0,0) 78%);
+  z-index: -1;
+}
+.map-marker-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px dashed rgba(255, 184, 79, 0.9);
+  animation: mapRingSpin 5s linear infinite, mapRingPulse 1.8s ease-out infinite;
+}
+.map-marker-dot {
+  position: absolute;
+  inset: 17px;
+  border-radius: 50%;
+  background: var(--accent2);
+  box-shadow: 0 0 14px 3px rgba(255, 184, 79, 0.9);
+  animation: mapDotPulse 1.6s ease-in-out infinite;
+}
+@keyframes mapRingSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes mapRingPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(242,149,74,0.5); }
+  70%  { box-shadow: 0 0 0 20px rgba(242,149,74,0); }
+  100% { box-shadow: 0 0 0 0 rgba(242,149,74,0); }
+}
+@keyframes mapDotPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.2); opacity: 0.8; }
+}
+.map-marker-label {
+  position: absolute;
+  transform: translate(-50%, -195%);
+  z-index: 3;
+  background: rgba(5, 7, 10, 0.45);
+  backdrop-filter: blur(3px);
+  border: 1px solid rgba(255, 184, 79, 0.85);
+  color: var(--accent2);
+  font-family: 'Courier New', monospace;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 6px 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+.map-pending {
+  padding: 70px 20px;
+  text-align: center;
+  color: var(--muted);
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+}
+@media (max-width: 700px) {
+  .map-hud-tag { left: 36px; font-size: 0.62rem; letter-spacing: 0.15em; }
+  .map-marker-label { font-size: 0.8rem; padding: 4px 10px; }
+  .map-marker-wrap { width: 42px; height: 42px; margin: -21px 0 0 -21px; }
+}
+.title-icon {
+  height: 14px;
+}
+
+/* ============================================================
+   HUD RADAR — capa visual añadida (Ejército de Orange)
+   ============================================================ */
+@keyframes hudSweep { to { transform: rotate(360deg); } }
+@keyframes hudBlip { 0%, 100% { opacity: 0.9; } 50% { opacity: 0.25; } }
+
+body {
+  background-image:
+    linear-gradient(rgba(242,149,74,0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(242,149,74,0.045) 1px, transparent 1px) !important;
+  background-size: 34px 34px !important;
+  background-attachment: fixed;
+}
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.55;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(242,149,74,0.055) 0px,
+    rgba(242,149,74,0.055) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+h1 {
+  font-family: 'Share Tech Mono', 'Bebas Neue', monospace !important;
+  text-shadow: 0 0 6px rgba(242,149,74,0.65), 0 0 22px rgba(242,149,74,0.25);
+}
+.subtitle {
+  font-family: 'Share Tech Mono', monospace !important;
+  letter-spacing: 0.16em !important;
+  text-transform: uppercase;
+  text-shadow: 0 0 6px rgba(242,149,74,0.35);
+}
+.category-title, .roster-title, h2 {
+  font-family: 'Share Tech Mono', monospace !important;
+  letter-spacing: 0.03em;
+}
+thead th, th {
+  font-family: 'Share Tech Mono', monospace !important;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-shadow: 0 0 5px rgba(242,149,74,0.3);
+}
+.btn, .tab, .nav-btn {
+  font-family: 'Share Tech Mono', monospace !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* Radar decorativo fijo — elemento de firma visual */
+.hud-radar {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  width: 96px;
+  height: 96px;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.55;
+}
+.hud-radar .ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(242,149,74,0.28);
+}
+.hud-radar .ring.r1 { inset: 0; }
+.hud-radar .ring.r2 { inset: 18px; }
+.hud-radar .ring.r3 { inset: 36px; }
+.hud-radar .cross {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(242,149,74,0.25), rgba(242,149,74,0.25)) center / 100% 1px no-repeat,
+    linear-gradient(90deg, rgba(242,149,74,0.25), rgba(242,149,74,0.25)) center / 1px 100% no-repeat;
+}
+.hud-radar .sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, rgba(242,149,74,0.55), transparent 28%);
+  animation: hudSweep 4.5s linear infinite;
+}
+.hud-radar .blip {
+  position: absolute;
+  top: 28%;
+  left: 62%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent2);
+  box-shadow: 0 0 6px var(--accent2);
+  animation: hudBlip 2.2s ease-in-out infinite;
+}
+@media (max-width: 640px) { .hud-radar { width: 64px; height: 64px; bottom: 10px; right: 10px; } }
+
+</style>
+</head>
+<body>
+<div class="hud-radar"><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div><div class="cross"></div><div class="sweep"></div><div class="blip"></div></div>
+
+<div class="pd-banner">
+  <div class="pd-banner-left">
+    <img src="wspd_seal.png" alt="Sello Ejército de Orange">
+    <div class="pd-banner-text">
+      <div class="line1">Ejército de Orange</div>
+      <div class="line2">LAGUNA</div>
+    </div>
+  </div>
+  <img class="pd-banner-photo" src="wspd_banner.png" alt="Oficiales Ejército de Orange">
+</div>
+
+<nav class="main-nav" id="mainNav">
+ <!-- <div class="nav-btn active" data-section="noticias">Noticias</div> -->
+  <div class="nav-btn" data-section="reglas">Reglas</div>
+  <div class="nav-btn" data-section="macros">Macros</div>
+ <!-- <div class="nav-btn" data-section="academia">Academia</div> -->
+  <div class="nav-btn" data-section="horario">Conversor de horario</div>
+</nav>
+
+<!-- ===================== SECCIÓN: REGLAS ===================== -->
+<section id="section-reglas" class="app-section">
+  <input type="text" class="search-box" id="search" placeholder="Buscar código, palabra clave o castigo...">
+  <div class="tabs" id="tabs"></div>
+  <div class="count" id="count"></div>
+  <div id="container"></div>
+</section>
+
+<!-- ===================== SECCIÓN: MACROS ===================== -->
+<section id="section-macros" class="app-section active">
+  <button class="macro-help-btn" id="btnComoAgregarMacros">¿Cómo agregar macros?</button>
+  <div class="macro-help-panel hidden" id="macroHelpPanel">
+    <div class="macro-help-frame-wrap">
+      <iframe class="macro-help-frame" src="" title="Cómo agregar macros" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+    </div>
+  </div>
+  <input type="text" class="search-box" id="macroSearch" placeholder="Buscar macro...">
+  <div class="count" id="macroCount"></div>
+  <div id="macroContainer"></div>
+</section>
+
+<div class="instructor-modal-overlay hidden" id="instructorModalOverlay">
+  <div class="instructor-modal-box">
+    <div class="instructor-modal-title">🔒 Código de Instructor</div>
+    <div class="instructor-modal-sub">Solo desbloquea las Macros de Instrucción.</div>
+    <input type="password" id="instructorCodeInput" placeholder="Código" inputmode="numeric" maxlength="12">
+    <div class="instructor-modal-error" id="instructorModalError"></div>
+    <div class="instructor-modal-actions">
+      <button class="instructor-btn instructor-btn-secundario" id="btnCancelarInstructorCodigo">Cancelar</button>
+      <button class="instructor-btn instructor-btn-primario" id="btnConfirmarInstructorCodigo">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SECCIÓN: NOTICIAS ===================== -->
+<section id="section-noticias" class="app-section">
+  <div class="noticias-header">
+    <div class="tabs" id="noticiasTabs"></div>
+    <button class="noticias-publicar-btn" id="btnAbrirNoticiasComposer">📢 Publicar noticia</button>
+  </div>
+  <div class="noticias-composer hidden" id="noticiasComposer">
+    <div class="noticias-composer-row">
+      <select id="noticiaDivisionInput"></select>
+    </div>
+    <textarea id="noticiaTextoInput" placeholder="Escribí la noticia..." maxlength="2000" rows="10"></textarea>
+    <div class="noticias-formato-ayuda">Formato: **negrita** · *cursiva* / _cursiva_ · __subrayado__ · ~~tachado~~ · `código` · &#96;&#96;&#96;bloque de código&#96;&#96;&#96; · &gt; cita · ||spoiler||</div>
+    <input type="text" id="noticiaImagenInput" placeholder="URL de imagen (opcional)">
+    <div class="noticias-composer-actions">
+      <span class="noticias-composer-error" id="noticiaComposerError"></span>
+      <button class="noticias-btn-secundario" id="btnCancelarNoticia">Cancelar</button>
+      <button class="noticias-btn-primario" id="btnPublicarNoticia">Publicar</button>
+    </div>
+  </div>
+  <div id="noticiasFeed" class="noticias-feed">
+    <div class="empty-msg">Cargando noticias...</div>
+  </div>
+</section>
+
+<div class="instructor-modal-overlay hidden" id="noticiasLoginOverlay">
+  <div class="instructor-modal-box">
+    <div class="instructor-modal-title">🔒 Código para publicar</div>
+    <div class="instructor-modal-sub">Líder/sublíder de división (solo en la suya), Federal General/Adjunto o administrador (en cualquiera).</div>
+    <input type="password" id="noticiasLoginCodeInput" placeholder="Código" inputmode="numeric" maxlength="12">
+    <div class="instructor-modal-error" id="noticiasLoginError"></div>
+    <div class="instructor-modal-actions">
+      <button class="instructor-btn instructor-btn-secundario" id="btnCancelarNoticiasLogin">Cancelar</button>
+      <button class="instructor-btn instructor-btn-primario" id="btnConfirmarNoticiasLogin">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SECCIÓN: HORARIO ===================== -->
+<section id="section-horario" class="app-section">
+  <iframe class="tz-iframe" src="timeline-gmt.html"></iframe>
+</section>
+
+<!-- ===================== SECCIÓN: ACADEMIA ===================== -->
+<section id="section-academia" class="app-section">
+  <div class="academia-placeholder">
+    <img class="academia-placeholder-bg" id="academiaBg" src="academy_seal.png" alt="">
+
+    <div class="academia-schedule" id="academiaSchedule">
+      <div class="academia-schedule-title">📋 HORARIOS DE INSTRUCCIONES 🚨🫡</div>
+      <div class="turno-grid" id="turnoGrid"></div>
+      <div class="academia-updated" id="academiaUpdated">Cargando horarios...</div>
+    </div>
+
+    <div class="academia-two-col">
+      <div class="academia-col-left">
+        <div class="turno-card attendance-card" data-action="asistencias">
+          <div class="turno-time">📋 LISTA DE ASISTENCIAS</div>
+          <div class="turno-row">Ver registro de asistencia a clases de academia</div>
+        </div>
+        <div class="turno-card evaluaciones-card" data-action="evaluaciones">
+          <div class="turno-time">🎖️ EVALUACIONES</div>
+          <div class="turno-row">Ver resultados de evaluaciones</div>
+        </div>
+        <div class="turno-card temario-card" data-action="temario">
+          <div class="turno-time">📚 TEMARIO</div>
+          <div class="turno-row">Ver los módulos de la Academia (A, B, C y D)</div>
+        </div>
+      </div>
+      <div class="academia-col-right">
+        <div class="roster-card">
+          <div class="roster-title">Miembros de la Academia Militar</div>
+          <div class="roster-columns">
+            <div class="roster-col">
+              <div class="roster-group">
+                <div class="roster-role">Líder</div>
+                <div class="roster-names" id="rosterLider">—</div>
+              </div>
+              <div class="roster-group">
+                <div class="roster-role">Sublíder(es)</div>
+                <div class="roster-names" id="rosterSublideres">—</div>
+              </div>
+            </div>
+            <div class="roster-col">
+              <div class="roster-group">
+                <div class="roster-role">Instructores</div>
+                <div class="roster-names" id="rosterInstructores">—</div>
+              </div>
+              <div class="roster-group">
+                <div class="roster-role">Instructores a prueba</div>
+                <div class="roster-names" id="rosterInstructoresPrueba">—</div>
+              </div>
+            </div>
+            <div class="roster-col">
+              <div class="roster-group">
+                <div class="roster-role">Evaluadores</div>
+                <div class="roster-names" id="rosterEvaluadores">—</div>
+              </div>
+            </div>
+          </div>
+          <div class="roster-admin-row">
+            <a href="admin.html" class="turno-card admin-card">
+              <div class="turno-time">⚙️ ADMINISTRACIÓN</div>
+              <div class="turno-row">Editar horarios, códigos de acceso y roster</div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="academia-map" id="academiaMap">
+      <button class="map-back-btn" id="closeMapBtn">← VOLVER</button>
+      <div class="map-frame" id="mapFrameInner"></div>
+    </div>
+
+    <div class="academia-map" id="academiaAttendance">
+      <button class="map-back-btn" id="closeAttendanceBtn">← VOLVER</button>
+      <div class="evaluaciones-tabs">
+        <button class="eval-tab active" data-lista="asistencias.html"><img src="1-Uniformado.svg" alt="" class="title-icon"> Uniformados</button>
+        <button class="eval-tab" data-lista="tenientes.html"><img src="2-Teniente.svg" alt="" class="title-icon"> Tenientes</button>
+        <button class="eval-tab" data-lista="capitanes.html"><img src="3-Capitan.svg" alt="" class="title-icon"> Capitanes</button>
+        <button class="eval-tab" data-lista="mayores.html"><img src="4-Mayor.svg" alt="" class="title-icon"> Mayores</button>
+        <button class="eval-tab" data-lista="coroneles.html"><img src="5-Coronel.svg" alt="" class="title-icon"> Coroneles</button>
+      </div>
+      <div class="map-frame attendance-frame">
+        <iframe src="asistencias.html" class="attendance-iframe"></iframe>
+      </div>
+    </div>
+
+    <div class="academia-map" id="academiaEvaluaciones">
+      <button class="map-back-btn" id="closeEvaluacionesBtn">← VOLVER</button>
+      <div class="map-frame attendance-frame">
+        <iframe src="evaluaciones.html" class="evaluaciones-iframe"></iframe>
+      </div>
+    </div>
+
+    <div class="academia-map" id="academiaTemario">
+      <button class="map-back-btn" id="closeTemarioBtn">← VOLVER</button>
+      <div class="temario-grid">
+        <div class="modulo-card">
+          <div class="modulo-letra">MÓDULO A</div>
+          <div class="modulo-titulo">Reglas básicas de recluta y reglas del departamento de policía</div>
+          <div class="modulo-objetivo-label">🎯 Objetivo del módulo</div>
+          <div class="modulo-objetivo-texto">Brindar los conocimientos básicos sobre las 15 reglas de la facción militar, establecidas por la administración del servidor, y las normas fundamentales de la Comandancia Militar, asegurando que comprendan y apliquen correctamente estos lineamientos durante su formación y servicio.</div>
+        </div>
+        <div class="modulo-card">
+          <div class="modulo-letra">MÓDULO B</div>
+          <div class="modulo-titulo">Las Reglas del RolePlay</div>
+          <div class="modulo-objetivo-label">🎯 Objetivo del módulo</div>
+          <div class="modulo-objetivo-texto">Brindar a los reclutas los conocimientos esenciales sobre las 16 reglas de Roleplay, indispensables para todo jugador dentro del servidor, así como identificar y comprender el funcionamiento de las zonas protegidas y zonas verdes, con el fin de prevenir sanciones y fomentar un roleplay de calidad.</div>
+        </div>
+        <div class="modulo-card">
+          <div class="modulo-letra">MÓDULO C</div>
+          <div class="modulo-titulo">Infracciones y delitos</div>
+          <div class="modulo-objetivo-label">🎯 Objetivo del módulo</div>
+          <div class="modulo-objetivo-texto">Explicar a los reclutas los tres grupos de infracciones: penales, civiles y administrativas, identificando las conductas que comprende cada una y las sanciones correspondientes. Asimismo, se abordará el trato adecuado hacia miembros de otras facciones, pandilleros y civiles, conforme a los protocolos de la Comandancia Militar.</div>
+        </div>
+        <div class="modulo-card">
+          <div class="modulo-letra">MÓDULO D</div>
+          <div class="modulo-titulo">Procedimientos</div>
+          <div class="modulo-objetivo-label">🎯 Objetivo del módulo</div>
+          <div class="modulo-objetivo-texto">Aprender las herramientas fundamentales para desempeñar correctamente la labor como oficial. Se explica el procedimiento de arresto paso a paso, el uso adecuado de la Bodycam como medio de evidencia, así como cuándo y cómo abrir un ticket para reportar situaciones que requieran la intervención de la administración. Dominar estos procedimientos garantiza actuaciones profesionales, transparentes y conforme a la normativa del servidor.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="codigos.js"></script>
+<script>
+/* ============================================================
+   DATOS
+   ============================================================ */
+/* Sección desactivada — solo comentada, no borrada, para poder reactivarla después.
+const codigos10 = [
+["10-4","Entendido"],
+["10-6","Actualmente ocupado"],
+["10-7","Fuera de servicio"],
+["10-8","En servicio"],
+["10-10","Pelea en curso"],
+["10-11","Parada de tráfico"],
+["10-12","Acompañamiento activo"],
+["10-13","Disparos efectuados"],
+["10-15","Sospechoso bajo custodia"],
+["10-20","¿Ubicación?"],
+["10-22","Desestimar"],
+["10-23","Llegada al lugar"],
+["10-24","Indique"],
+["10-26","Sospechoso detenido"],
+["10-27","Verificación de identidad"],
+["10-29","Verificación de órdenes de arresto"],
+["10-30","Iniciando búsqueda de criminales buscados"],
+["10-32","Se necesita respaldo"],
+["10-41","Solicitud de transporte de prisionero"],
+["10-47","Tiroteo en curso"],
+["10-57","Atropello y fuga"],
+["10-60","Sospechosos armados"],
+["10-80","Persecución en curso"],
+["10-97","En ruta"],
+["10-100","Oficial herido"]
+].map(([code, meaning]) => ({cat:"Códigos 10", code, title:meaning, desc:"", punish:""}));
+*/
+
+const macrosGenerales = [
+// Presentación y órdenes
+["PRESENTACION", "/me ¡MI MÁXIMO RESPETO SR(A) [RANGO] [NOMBRE], PRESENTANDOSE!"],
+["10-4 ORDEN RECIBIDA", "/flobby 10-4 (copiado, orden recibida)"],
+// Entrada, salida y estado de servicio
+["ENTRADA", "/flobby [RANGO] - Entrada."],
+["SALIDA", "/flobby [RANGO] - Salida."],
+["10-8 EN SERVICIO", "/flobby [10-8] [RANGO][DIVISION] En servicio"],
+["10-7 FUERA DE SERVICIO", "/flobby [10-7] [RANGO][DIVISION] Fuera de servicio"],
+["FUERA DE SERVICIO (VACACIONES)", "/flobby Actualmente fuera de servicio (vacaciones)."],
+// Permisos
+["PERMISO INGRESAR A TC", "/flobby Solicito permiso para ingresar a TC."],
+["PERMISO JEEP MISION DIARIA", "/flobby Solicito permiso de sacar jeep para misión diaria."],
+["PERMISO PATRULLAJE DE FARMEO", "/flobby Solicito permiso para patrullaje de farmeo."],
+// Atención en zona restringida y advertencias
+["ATENCION ZONA RESTRINGIDA", "/me Señor/a, habla [RANGO] [NOMBRE] del Ejército Estatal de Orange. Esta es una zona restringida. Favor de guardar sus armas y de mantener distancia de la entrada. ¿En qué puedo ayudarle?"],
+["REQUISITOS PARA UNIRSE", "/me Para unirte al Ejercito de Orange, debes ser de nivel 6, ser mayor de 18 años, obligatorio hablar Español, no tener infracciones ni pertenecer a ninguna pandilla o facción, tambien debe tener micrófono funcional, y por último, tu nombre de RP debe coincidir con tu nombre de Discord."],
+["1RA ADVERTENCIA", "/me 1RA ADVERTENCIA - Esta es una zona restringida. Si usted no tiene nada que hacer aquí, por favor, abandone la zona inmediatamente."],
+["2DA ADVERTENCIA", "/me 2DA ADVERTENCIA - Conducir un coche directamente a la puerta, correr con un arma abierta, correr por la base y trollear a los soldados infringe las reglas del juego de rol. ¡Pueden matarlos por esto si no tienen nada que hacer en la base, váyanse ahora!"],
+["3RA ADVERTENCIA", "/me 3RA ADVERTENCIA - ¡Esta es una zona restringida! ¡Solo personal militar y funcionarios del gobierno pueden pasar!, Usted no ha obedecido nuestras órdenes por lo tanto nos ha obligado a usar fuerza letal!"],
+["ULTIMA ADVERTENCIA 10 SEGUNDOS", "/me Este es el Ejército Estatal de Orange, Tienes 10 segundos para abandonar la zona. Si usted no cumple con la orden, se usará Fuerza Letal."],
+// Uso de la fuerza
+["TASER", "/do ¡Taser! ¡Taser! Te he neutralizado para controlar la situación."],
+["DISPARAR EN DEFENSA", "/do Dispara en defensa propia o de sus compañeros."],
+["ABRAN FUEGO", "/do ¡AMENAZA CONFIRMADA, ABRAN FUEGO!"],
+["INTRUSO ABATIDO", "/flobby ¡INTRUSO abatido!"],
+// Otras
+["FDB", "/flobby FDB"],
+["RAB", "/flobby RAB"],
+].map(([label, text], i) => ({cat:"Macros", sub:"Macros Generales", code:`M${i+1}`, label, macroText:text, isMacro:true}));
+
+/* Lista anterior de Macros Generales — comentada, no borrada, por si hace falta rescatar alguna.
+const macrosGeneralesViejas = [
+["MAXIMO RESPETO", "/me MI MÁXIMO RESPETO SR(A) [Rango actual] (¡SU NOMBRE,) PRESENTÁNDOSE!"],
+["DISPARAR / VDM", "/do ¡¡SACA EL ARMA & DISPARA A MIEMBROS DE PANDILLAS O CIVILES PARA PROTEGER A LOS SOLDADOS Y A MI MISMO O POR VDM!!"],
+["TASER", "/do ¡TASER TASER TASER! HE USADO TASER PARA CONTROLAR LA SITUACIÓN, POR FAVOR OBEDEZCA LAS ÓRDENES MILITARES."],
+["ARMA DE DEFENSA PERSONAL", "/do Abre el maletero del auto y saca un arma para defensa personal !SOLDADO DE VACACIONES!"],
+["ESTACIONAR VEHICULO", "/do SR. CIUDADANO, POR FAVOR ESTACIONE SU VEHÍCULO A UNA DISTANCIA SEGURA DEL PAVIMENTO Y VENGA A PIE PARA RESOLVER SUS DUDAS."],
+["GUARDE SUS ARMAS", "/do GUARDE SUS ARMAS O USAREMOS LA FUERZA LETAL (TIENE 5 SEGUNDOS)"],
+["PRESENTACION", "/me Hola sr(a), soy [RANGO] [NOMBRE] del Ejército de Orange. Esta es un área restringida, ¿en qué puedo ayudarle?"],
+["10-4", "/flobby (10-4) ENTENDIDO"],
+["ENTRADA", "/flobby [RANGO] - ENTRADA"],
+["SALIDA", "/flobby [RANGO] - SALIDA"],
+["RECORDATORIO DE BASE", "/me Recuerda: Conducir un coche directamente a la puerta, correr con un arma abierta, correr por la base y trollear a los soldados infringe las reglas del juego de rol. ¡Pueden matarlos por esto si no tienen nada que hacer en la base, váyanse ahora! "],
+["MIEMBRO DE PANDILLA EN ZONA MILITAR", "/do ATENCION EL SR(A) FUE IDENTIFICADO COMO MIEMBRO DE UNA PANDILLA ESTA EN UN AREA RESTRINGIDA POR FAVOR ABANDONE LA ZONA MILITAR O USAREMOS FUERZA LETAL."],
+["1RA ADVERTENCIA", "/me (1ra Advertencia) Esta es una zona restringida. Si usted no tiene nada que hacer aquí, por favor, abandone la zona inmediatamente."],
+["2DA ADVERTENCIA", "/me (2da Advertencia) Aléjese del ingreso ahora mismo, Mantenga las manos visibles. El incumplimiento de esta orden será considerado una amenaza."],
+["ULTIMA ADVERTENCIA", "/me  (Última advertencia) ¡Esta es una zona restringida, se permite el uso de fuerza letal! ¡TIENEN 5 SEGUNDOS PARA RETIRARSE O SE USARÁ FUERZA LETAL!"],
+["FDB", "/flobby (FDB)"],
+["RAB", "/flobby (RAB)"],
+["REQUISITOS PARA UNIRSE", "/me PARA UNIRSE AL EJÉRCITO: DEBE SER NIVEL 6, TENER 18 AÑOS O MÁS, MICRÓFONO FUNCIONAL, NO TENER INFRACCIONES, SU NOMBRE DE RP DEBE COINCIDIR CON EL DE DISCORD, POSER EL CERTIFICADO DE ROL Y  DEBE HABLAR ESPAÑOL."],
+["5 SEGUNDOS PARA MARCHARSE", "/do SE LE HA PROPORCIONADO LA INFORMACIÓN. ESTA ES UN ÁREA RESTRINGIDA. ¡¡¡TIENE 5 SEGUNDOS PARA MARCHARSE!!!"],
+["CONTEO 5", "/me 5!"],
+["CONTEO 4", "/me 4!"],
+["CONTEO 3", "/me 3!"],
+["CONTEO 2", "/me 2!"],
+["CONTEO 1", "/me 1!"],
+["DISPAROS AL INTRUSO", "/do ¡0 DISPAROS AL INTRUSO!"],
+["REGLAS DEL EVENTO", "/flobby ¡REGLAS DEL EVENTO!: 1. No disparar a través de las paredes, 2. No salir de los limites de la base, 3. No subir a lugares donde la lógica del parkour no aplique, 4. No hablar con los muertos o abatidos (prohibido insultar o burlarse de ellos), 5. Prohibido entrar a sitios seguros como Torre de Radio o Sede Central."],
+["SOLICITAR PATRULLAJE", "/flobby ¡¡¡SOLICITO PERMISO PARA PATRULLAR!!!"],
+["PATRULLAJE FINALIZADO", "/flobby ¡¡PATRULLAJE FINALIZADO!! "],
+["SOLICITAR JEEP DE MISION", "/flobby SOLICITO PERMISO PARA SACAR JEEP DE MISIÓN DIARIA!"],
+].map(([label, text], i) => ({cat:"Macros", sub:"Macros Generales", code:`M${i+1}`, label, macroText:text, isMacro:true}));
+*/
+
+/* Sección desactivada — solo comentada, no borrada, para poder reactivarla después.
+const macrosCodigo10 = [
+["10-4", "/flobby (10-4) ENTENDIDO."],
+["10-6", "/flobby (10-6) ACTUALMENTE OCUPADO."],
+["10-7", "/flobby (10-7) FUERA DE SERVICIO."],
+["10-8", "/flobby (10-8) EN SERVICIO."],
+["10-10", "/flobby (10-10) PELEA EN CURSO."],
+["10-11", "/flobby (10-11) PARADA DE TRÁFICO."],
+["10-12", "/flobby (10-12) ACOMPAÑAMIENTO ACTIVO."],
+["10-13", "/flobby (10-13) DISPAROS EFECTUADOS."],
+["10-15", "/flobby (10-15) SOSPECHOSO BAJO CUSTODIA."],
+["10-20", "/flobby (10-20) ¿UBICACIÓN?"],
+["10-22", "/flobby (10-22) DESESTIMAR."],
+["10-23", "/flobby (10-23) LLEGADA AL LUGAR."],
+["10-24", "/flobby (10-24) INDIQUE."],
+["10-26", "/flobby (10-26) SOSPECHOSO DETENIDO."],
+["10-27", "/flobby (10-27) VERIFICACIÓN DE IDENTIDAD."],
+["10-29", "/flobby (10-29) VERIFICACIÓN DE ÓRDENES DE ARRESTO."],
+["10-30", "/flobby (10-30) INICIANDO BÚSQUEDA DE CRIMINALES BUSCADOS"],
+["10-32", "/flobby (10-32) SE NECESITA RESPALDO."],
+["10-41", "/flobby (10-41) SOLICITUD DE TRANSPORTE DE PRISIONERO."],
+["10-47", "/flobby (10-47) TIROTEO EN CURSO."],
+["10-57", "/flobby (10-57) ATROPELLO Y FUGA."],
+["10-60", "/flobby (10-60) SOSPECHOSOS ARMADOS."],
+["10-80", "/flobby (10-80) PERSECUCIÓN EN CURSO."],
+["10-97", "/flobby (10-97) EN RUTA."],
+["10-100", "/flobby (10-100) OFICIAL HERIDO."],
+["32-37", "/flobby (32-37) SE NECESITA SUPERVISOR."],
+["CÓDIGO 2", "/flobby (CÓDIGO 2) LUCES Y SIRENAS APAGADAS."],
+["CÓDIGO 3", "/flobby (CÓDIGO 3) LUCES Y SIRENAS ENCENDIDAS."],
+["CÓDIGO 4", "/flobby (CÓDIGO 4) ESCENA DESPEJADA."],
+].map(([label, text], i) => ({cat:"Macros", sub:"Macros Código 10", code:`MC${i+1}`, label, macroText:text, isMacro:true}));
+*/
+
+/* Sección desactivada — solo comentada, no borrada, para poder reactivarla después.
+const macrosInstruccion = [
+["INSTRUCTOR", "/me ¡MI MÁXIMO RESPETO SR/A [rango] [nombre] [INSTRUCTOR DE ACADEMIA POLICIAL], PRESENTÁNDOSE!"],
+["PPH", "/do Favor de colocar “PPH” en el chat en caso de comentarios y/o dudas."],
+["ACADEMIA EN CAMINO", "/flobby ACADEMIA POLICIAL en camino para instrucción de reclutamiento."],
+["CONVOCATORIA INSTRUCCION", "/flobby RECLUTAS HASTA SARGENTOS MAYORES, acudir a sala de revista en PISO 2 para INSTRUCCIÓN DE ACADEMIA (obligatorias para ascender a chaleco)."],
+["PERMISO CONCEDIDO", "/flobby PERMISO CONCEDIDO SR(A), BUEN PATRULLAJE. RECUERDA LAS NORMAS: ¡CIEGO, SORDO Y MUDO! [autorización de academia]"],
+["PERMISO NEGADO", "/flobby ¡NEGADO SR(A), tenemos INSTRUCCIÓN ACTIVA, favor de acudir a piso 2 en sala de revista!"],
+["EVALUACION TENIENTE", "/flobby EVALUACION PARA ASCENSO A TENIENTE EN SALA DE DESCANSO"],
+["INSTRUCCION ACTIVA", "/flobby NEGADO SR(A), TENEMOS INSTRUCCION ACTIVA, FAVOR DE ACUDIR A PISO 2 EN SALA DE REVISTA!"],
+["REUNION INSTRUCTORES", "/flobby INSTRUCTORES DE ACADEMIA FAVOR DE ACUDIR A REUNIÓN EN [ubicacion]."],
+].map(([label, text], i) => ({cat:"Macros", sub:"Macros de Instrucción", code:`MI${i+1}`, label, macroText:text, isMacro:true}));
+*/
+
+const macros = [...macrosGenerales /*, ...macrosCodigo10, ...macrosInstruccion */];
+
+// Vinculación de código 10 <-> macro desactivada junto con codigos10/macrosCodigo10 (ver arriba).
+// const macroByCode10 = {};
+// macrosCodigo10.forEach(m => { macroByCode10[m.label] = m.macroText; });
+// codigos10.forEach(r => {
+//   if (macroByCode10[r.code]) {
+//     r.copyMacro = macroByCode10[r.code];
+//   }
+// });
+
+// NOTA: "macros" ya NO se mezcla dentro de "rules". Tiene su propia sección.
+const rules = [
+// Ejército - Reglas del Ejército de Orange
+{cat:"Ejército", code:"1", title:"Actitud irrespetuosa hacia compañeros y civiles", desc:"", punish:"1 reprimenda o destitución del soldado (por decisión del líder)."},
+{cat:"Ejército", code:"2", title:"Dirigirse a los superiores sin \"Señor\"/\"Señora\"", desc:"Deben dirigirse a los superiores con \"Señor\"/\"Señora\".", punish:"1 alerta."},
+{cat:"Ejército", code:"3", title:"Corrupción", desc:"Se prohíbe cualquier tipo de corrupción: solicitar o aceptar sobornos (dinero, bienes o servicios) de miembros de la Facción del Ejército, policías o jugadores a cambio de bienes, dinero o servicios.", punish:"Destitución del soldado."},
+{cat:"Ejército", code:"4", title:"Uso de armas, fuerza física o equipo especial sin previo aviso", desc:"Una razón significativa incluye: amenaza a la vida y la salud de un soldado o de los ciudadanos de la zona; entrada no autorizada al territorio de una base militar.", punish:"1 reprimenda o despido del soldado (por decisión del líder)."},
+{cat:"Ejército", code:"5", title:"Uso no autorizado del vehículo especial \"Carrier\"", desc:"Los soldados no pueden utilizar un vehículo especial \"Carrier\" sin permiso de los generales, subalternos o del jefe.", punish:"1 advertencia."},
+{cat:"Ejército", code:"6", title:"Incumplimiento de la subordinación", desc:"No acatar las órdenes de los generales, subalternos o del jefe.", punish:"1 reprimenda o despido del empleado (por decisión del líder)."},
+{cat:"Ejército", code:"7", title:"Uso de vehículos de la empresa para fines personales", desc:"", punish:"1 reprimenda o despido del empleado (por decisión del líder)."},
+{cat:"Ejército", code:"8", title:"Incumplimiento de las normas del servidor", desc:"", punish:"1 reprimenda o despido del empleado (por decisión del líder)."},
+{cat:"Ejército", code:"9", title:"Salir de la Base Militar uniformado o con arma", desc:"Solo se puede salir de la base con permiso de los generales, subalternos o del líder.", punish:"1 reprimenda."},
+{cat:"Ejército", code:"10", title:"Escalado de sanciones", desc:"2 advertencias equivalen a 1 reprimenda. 3 amonestación implican la destitución del soldado.", punish:""},
+// Reglas del Evento
+{cat:"Reglas del Evento", code:"1", title:"No disparar a través de las paredes", desc:"", punish:""},
+{cat:"Reglas del Evento", code:"2", title:"No salir de los limites de la base", desc:"Todos deben estar dentro de la base en todo momento.", punish:""},
+{cat:"Reglas del Evento", code:"3", title:"No subir a lugares donde la lógica del parkour no aplique", desc:"Mientras puedan hacer parkour podrán subirse.", punish:""},
+{cat:"Reglas del Evento", code:"4", title:"No hablar con los muertos o abatidos", desc:"En especial prohibido insultar o burlarse de los abatidos.", punish:""},
+{cat:"Reglas del Evento", code:"5", title:"Prohibido entrar a sitios seguros", desc:"Como Torre de Radio o Sede Central.", punish:""},
+// Reglas de la Base
+{cat:"Reglas de la Base", code:"1", title:"Prohibido permanecer AFK dentro de la base", desc:"Si vas a ausentarte, deberás cerrar sesión correctamente.", punish:""},
+{cat:"Reglas de la Base", code:"2", title:"Prohibido conducir vehículos militares sin autorización", desc:"Solo un General o superior podrá autorizar el uso de vehículos de la base(en caso de no haber ninguno, el rango más alto en la base).", punish:""},
+{cat:"Reglas de la Base", code:"3", title:"Prohibido salir de la base sin permiso", desc:"Toda salida deberá ser autorizada y supervisada por altos mandos, de rango Sargento Primero hacia abajo solo pueden salir acompañados de un teniente o superior, solo se autorizara un permiso diario", punish:""},
+{cat:"Reglas de la Base", code:"4", title:"Respeto y disciplina obligatoria", desc:"Todos los soldados deberán respetar a superiores y compañeros en todo momento.", punish:""},
+{cat:"Reglas de la Base", code:"5", title:"Uso responsable del armamento", desc:"Queda prohibido utilizar armas o Taser de manera indebida, innecesaria o jugando dentro de la base.", punish:""},
+// 4. Cuentas
+{cat:"Cuentas", code:"AC1", title:"Venta de cuenta", desc:"Venta y/o intento de venta de una cuenta en sitios de terceros o en el servidor.", punish:"Ban permanente de todas las cuentas del jugador."},
+{cat:"Cuentas", code:"AC2", title:"Transferir cuenta", desc:"Transferir y/o intentar transferir una cuenta a otro jugador.", punish:"Ban permanente de la cuenta transferida."},
+{cat:"Cuentas", code:"AC3", title:"Multicuentas", desc:"Crear más de 3 cuentas en un mismo dispositivo.", punish:"Ban permanente de todas las cuentas después de la tercera."},
+{cat:"Cuentas", code:"AC4", title:"Hackeo de cuenta", desc:"Hackear y/o obtener acceso no autorizado a la cuenta de otro jugador.", punish:"Ban permanente del infractor + reset de contraseña de la cuenta afectada."},
+{cat:"Cuentas", code:"AC5", title:"RMT", desc:"Vender, anunciar, intercambiar o comprar bienes/dinero del juego por dinero real.", punish:"Ban permanente de todas las cuentas."},
+// 5. RP
+{cat:"Reglas de RP", code:"RP1", title:"DeathMatch (DM)", desc:"Infligir daño o matar al personaje de otro jugador sin motivo RP.", punish:"20 minutos de cárcel."},
+{cat:"Reglas de RP", code:"RP2", title:"DeathMatch Auto (DMAuto)", desc:"Dañar o destruir el vehículo de otro jugador sin motivo RP.", punish:"20 minutos de cárcel."},
+{cat:"Reglas de RP", code:"RP3", title:"Poder No RP (NP)", desc:"Exceder las capacidades físicas del personaje.", punish:"10 minutos de cárcel."},
+{cat:"Reglas de RP", code:"RP4", title:"Non Role Play (NRP)", desc:"Violación de la lógica del personaje, situaciones poco realistas.", punish:"15 minutos de cárcel."},
+{cat:"Reglas de RP", code:"RP5", title:"Meta Gaming (MG)", desc:"Usar información del mundo real dentro del RP.", punish:"30 min de silencio a 60 min de cárcel."},
+{cat:"Reglas de RP", code:"RP6", title:"Rechazo del RP", desc:"Rechazar el proceso de rol para beneficio personal.", punish:"30 a 60 min de cárcel, según frecuencia."},
+{cat:"Reglas de RP", code:"RP7", title:"Desequilibrio en RP", desc:"Uso desequilibrado de /do, /me, /try.", punish:"20 minutos de cárcel."},
+{cat:"Reglas de RP", code:"RP8", title:"AFK", desc:"Inactividad por más de 5 minutos.", punish:"Desconexión del servidor."},
+{cat:"Reglas de RP", code:"RP9", title:"DriveBy (DB)", desc:"Dañar o matar con un vehículo.", punish:"60 minutos de cárcel."},
+{cat:"Reglas de RP", code:"RP9.1", title:"Mass Drive-By", desc:"Dañar o matar a un grupo de jugadores con un vehículo.", punish:"Ban de 12 horas."},
+{cat:"Reglas de RP", code:"RP10", title:"Repeat Kill (RK)", desc:"Matar/perseguir a un jugador tras su muerte, o volver al lugar en 15 min.", punish:"90 minutos de cárcel."},
+{cat:"Reglas de RP", code:"RP11", title:"Zonas protegidas", desc:"Cometer delitos o atacar en zonas verdes/zonas de trabajo, o acechar salidas.", punish:"30 a 60 min de cárcel."},
+{cat:"Reglas de RP", code:"RP12", title:"Secuestro NRP", desc:"Secuestro poco realista: más del 50% de secuestrados vs secuestradores, o más de 5 a la vez.", punish:"30 minutos de cárcel."},
+{cat:"Reglas de RP", code:"RP13", title:"Facción NRP", desc:"Comportamiento no RP dentro de facciones (liberación ilegal, ejecuciones por policía).", punish:"Exoneración de facción y/o 30 min cárcel a 3 días de ban."},
+{cat:"Reglas de RP", code:"RP14", title:"Acoso sexual", desc:"Cualquier forma de acción sexual no consentida, incluyendo simulaciones y diálogos/acciones explícitas, uso de insultos étnicos y/o LGBT+, o atención excesiva. Todas las acciones sexuales requieren consentimiento OOC. No deben ocurrir en áreas públicas o frecuentadas.", punish:"60 min de silencio o 24h a 30 días de ban."},
+{cat:"Reglas de RP", code:"RP15", title:"Interrupción de facción", desc:"Provocar a miembros de facción por diversión o interrumpir sus operaciones.", punish:"30 minutos de cárcel."},
+{cat:"Reglas de RP", code:"RP16", title:"Actos contra personal de emergencia", desc:"Actos delictivos contra personal médico de emergencia.", punish:"90 min de cárcel a 12 horas de expulsión."},
+// 6. Chat
+{cat:"Chat y Comunicación", code:"CHAT1", title:"Insultos a jugadores", desc:"Insultar sin motivo relacionado con el juego.", punish:"Ban de 24 horas."},
+{cat:"Chat y Comunicación", code:"CHAT2", title:"Insultos a familiares", desc:"Insultar a familiares de otros jugadores, directa o veladamente.", punish:"240 min de silencio a 3 días de ban."},
+{cat:"Chat y Comunicación", code:"CHAT3", title:"Insultos religión/nacionalidad", desc:"Insultar religión/nacionalidad u otros temas sensibles.", punish:"240 min de silencio a 3 días de ban."},
+{cat:"Chat y Comunicación", code:"CHAT4", title:"Insultos a la Administración", desc:"Insultar a cualquier representante de la administración.", punish:"240 min de silencio a 7 días de ban."},
+{cat:"Chat y Comunicación", code:"CHAT5", title:"Inundación (flood)", desc:"Inundar el chat con mensajes, incluyendo macros.", punish:"Silencio 10 minutos."},
+{cat:"Chat y Comunicación", code:"CHAT6", title:"Inundación en reportes", desc:"Inundar el sistema de reportes u otro feedback.", punish:"Silencio 10 a 30 minutos."},
+{cat:"Chat y Comunicación", code:"CHAT7", title:"Publicidad no autorizada", desc:"Publicidad de recursos de terceros.", punish:"Ban de 10 días."},
+{cat:"Chat y Comunicación", code:"CHAT8", title:"Música en voz", desc:"Ruido/música en el chat de voz.", punish:"Silencio 60 minutos."},
+{cat:"Chat y Comunicación", code:"CHAT9", title:"Suplantar Administración", desc:"Fingir ser representante de la administración/empresa.", punish:"Ban permanente de todas las cuentas."},
+{cat:"Chat y Comunicación", code:"CHAT10", title:"Hacer trampa", desc:"Cualquier forma de engañar a jugadores.", punish:"Ban permanente de todas las cuentas."},
+{cat:"Chat y Comunicación", code:"CHAT11", title:"Engañar a la Administración", desc:"Cualquier forma de engaño hacia la administración.", punish:"Ban permanente de todas las cuentas."},
+{cat:"Chat y Comunicación", code:"CHAT12", title:"Difamación", desc:"Atacar/difamar al proyecto o miembros públicamente.", punish:"Ban de todas las cuentas hasta 30 días."},
+{cat:"Chat y Comunicación", code:"CHAT13", title:"Amenazas fuera de juego", desc:"Amenazas a la integridad física real de alguien.", punish:"Ban de 10 días."},
+{cat:"Chat y Comunicación", code:"CHAT14", title:"Influencia NRP", desc:"Forzar a otros a romper reglas para que sean expulsados.", punish:"Ban de 12 horas."},
+{cat:"Chat y Comunicación", code:"CHAT15", title:"Comportamiento tóxico", desc:"Acciones/comentarios hostiles dirigidos a jugadores o admins.", punish:"Ban de 1 a 3 días."},
+{cat:"Chat y Comunicación", code:"CHAT16", title:"Idioma oficial", desc:"Se debe usar el idioma oficial salvo con grupos de 5 o menos jugadores.", punish:"Silencio 10/15/30/60 min o ban de 12h según recurrencia."},
+{cat:"Chat y Comunicación", code:"CHAT17", title:"Divulgación de datos personales", desc:"Doxxing o divulgación de datos privados de otros jugadores.", punish:"Ban permanente de todas las cuentas."},
+{cat:"Chat y Comunicación", code:"TCHAT1", title:"Chat comercial - Fuera de tema", desc:"Mensajes no relacionados con comercio en el chat comercial.", punish:"Silencio 10 a 60 minutos."},
+{cat:"Chat y Comunicación", code:"TCHAT2", title:"Chat comercial - Engañar", desc:"Anunciar productos inexistentes o que no son del vendedor.", punish:"Silencio 10 minutos."},
+{cat:"Chat y Comunicación", code:"TCHAT3", title:"Chat comercial - Spam", desc:"Spam o inundación con mensajes repetitivos.", punish:"Silencio 5 minutos."},
+{cat:"Chat y Comunicación", code:"TCHAT4", title:"Chat comercial - Fraude", desc:"Engañar o confundir jugadores al hacer trading.", punish:"Ban de 12 horas + retiro de artículos ilegales."},
+// 7. Violaciones graves
+{cat:"Violaciones Graves", code:"ABUSE1", title:"Abuso de mods del juego", desc:"Aprovechar bugs/vulnerabilidades (disparar a través de paredes, comer en peleas, usar JAIL CARD indebidamente, etc).", punish:"Ban de 1 a 30 días."},
+{cat:"Violaciones Graves", code:"ABUSE2", title:"Abuso de AFK", desc:"Usar bugs o programas de terceros (clickers/macros) para evitar desconexión por inactividad.", punish:"Ban de 3 días."},
+{cat:"Violaciones Graves", code:"ABUSE3", title:"Incumplimiento sistemático", desc:"Violación repetida y sistemática de reglas (referencia: 5 violaciones).", punish:"Ban de 3 a 30 días."},
+{cat:"Violaciones Graves", code:"ABUSE3.1", title:"Incumplimiento extremo", desc:"Múltiples infracciones ABUSE3 repetidas (referencia: 3 infracciones ABUSE3).", punish:"Ban permanente de todas las cuentas."},
+{cat:"Violaciones Graves", code:"ABUSE4", title:"Interrupción de eventos grandes", desc:"Interrumpir/obstruir eventos con muchos jugadores.", punish:"Ban de 12 horas."},
+{cat:"Violaciones Graves", code:"ABUSE5", title:"Bloqueo de puntos relevantes", desc:"Impedir acceso a marcadores de trabajo, entradas, etc.", punish:"10 a 60 minutos de cárcel."},
+{cat:"Violaciones Graves", code:"ALERT1", title:"Evasión de ban", desc:"Intentar eludir o evadir una prohibición/castigo.", punish:"Ban de 14 días a permanente."},
+{cat:"Violaciones Graves", code:"ALERT2", title:"Daño a los servidores", desc:"Dañar la economía, estabilidad de servidores o el proyecto en general.", punish:"Ban permanente de todas las cuentas."},
+{cat:"Violaciones Graves", code:"ALERT3", title:"Software de terceros (cheats)", desc:"Modificar archivos o usar programas para alterar datos del juego.", punish:"Ban permanente de todas las cuentas."},
+{cat:"Violaciones Graves", code:"ALERT4", title:"Daño a la economía", desc:"Transferir moneda/artículos entre jugadores por encima de los límites.", punish:"Eliminación del monto sin reembolso; posible ban de 30 días a permanente."},
+{cat:"Violaciones Graves", code:"ALERT5", title:"Difamación externa", desc:"Socavar la integridad del proyecto/miembros en canales externos (Discord oficial u otros).", punish:"Ban permanente de todas las cuentas."},
+// 8. Contenido en vivo
+{cat:"Contenido en Vivo", code:"MEDIA1", title:"Stream Sniping / Interferencia", desc:"Interrumpir transmisiones en vivo, acosar streamers, sabotear grabaciones.", punish:"Ban de 1 a 24 horas."},
+// 9. Bandas
+{cat:"Reglas de Bandas", code:"CLAN1", title:"Nombre/rangos de la banda", desc:"El nombre, descripción y rangos no deben contener palabras ofensivas.", punish:"Cambio obligatorio del nombre o descripción."},
+{cat:"Reglas de Bandas", code:"CLAN2", title:"Bloqueo de marcadores de entrada", desc:"Bloquear los marcadores de entrada a la casa de la banda.", punish:"30 minutos de cárcel."},
+{cat:"Reglas de Bandas", code:"CLAN3", title:"Reglas del chat de banda", desc:"Se aplican las mismas reglas de la categoría CHAT dentro del chat de banda.", punish:"Según la categoría CHAT correspondiente."},
+{cat:"Reglas de Bandas", code:"CLAN4", title:"Alianzas prohibidas en eventos", desc:"Alianzas entre bandas durante eventos.", punish:"30 minutos de cárcel."},
+{cat:"Reglas de Bandas", code:"CLAN5", title:"Uso del taser de banda", desc:"Usar el taser contra un jugador más de dos veces sin razón RP.", punish:"30 minutos de cárcel."},
+{cat:"Reglas de Bandas", code:"CLAN5.1", title:"Taser contra miembros de facción", desc:"Usar el taser para sacar a un jugador de un vehículo de facción sin razón RP.", punish:"90 minutos de cárcel."},
+{cat:"Reglas de Bandas", code:"CLAN6", title:"Matar en marcadores de entrada/salida", desc:"Matar jugadores en los marcadores de la casa de banda, disparar dentro/fuera.", punish:"40 minutos de cárcel."},
+{cat:"Reglas de Bandas", code:"CLAN7", title:"Bloquear con vehículos", desc:"Bloquear entradas/salidas de la casa de banda con vehículos.", punish:"60 minutos de cárcel."},
+{cat:"Reglas de Bandas", code:"CLAN8", title:"Reclutar en zonas verdes", desc:"Llamar/anunciar para unirse a una banda en zonas verdes.", punish:"Silencio 60 minutos."},
+{cat:"Reglas de Bandas", code:"CLAN9", title:"Taser contra vehículos de trabajo", desc:"Usar taser contra jugadores en taxis/autobuses para sacarlos.", punish:"90 minutos de cárcel."},
+{cat:"Reglas de Bandas", code:"CLAN10", title:"Abuso de moneda de banda", desc:"Uso de bugs para obtener moneda de banda de forma deshonesta.", punish:"Confiscación de bienes o eliminación de la banda sin reembolso."},
+{cat:"Reglas de Bandas", code:"CLAN11", title:"Decisión de administración superior", desc:"La administración puede sancionar casos no especificados en la lista.", punish:""},
+
+];
+
+/* ============================================================
+   UTILIDADES COMUNES
+   ============================================================ */
+function escapeAttr(str) {
+  return str.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function highlightTags(text) {
+  return text
+    .replace(/^PROHIBIDO/, '<span style="color:#ff6b6b; font-weight:800;">PROHIBIDO</span>')
+    .replace(/^OBLIGATORIO/, '<span style="color:#4ade80; font-weight:800;">OBLIGATORIO</span>');
+}
+
+function renderRuleCard(r) {
+  if (r.isMacro) {
+    return `<div class="rule macro-rule" data-macro="${escapeAttr(r.macroText)}">
+      <div class="macro-label">${r.label}</div>
+      <div class="macro-text">${r.macroText}</div>
+      <div class="expand-hint">toca para copiar</div>
+    </div>`;
+  }
+  if (r.copyMacro) {
+    return `<div class="rule macro-rule" data-macro="${escapeAttr(r.copyMacro)}">
+      <div class="rule-header"><span class="code">${r.code}</span><span class="rule-title">${r.title}</span></div>
+      <div class="expand-hint">toca para copiar macro</div>
+    </div>`;
+  }
+  const displayTitle = (r.title.startsWith('PROHIBIDO') || r.title.startsWith('OBLIGATORIO')) ? highlightTags(r.title) : r.title;
+  return `<div class="rule" onclick="this.classList.toggle('expanded')">
+    <div class="rule-header"><span class="code">${r.code}</span><span class="rule-title">${displayTitle}</span></div>
+    ${r.desc ? `<div class="rule-desc">${r.desc}</div>` : ''}
+    ${r.punish ? `<div class="rule-punish"><b>Castigo:</b> ${r.punish}</div>` : ''}
+    ${r.desc || r.punish ? `<div class="expand-hint">toca para ver más</div>` : ''}
+  </div>`;
+}
+
+function copyToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    return navigator.clipboard.writeText(text);
+  }
+  return new Promise((resolve, reject) => {
+    try {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      textarea.style.top = '0';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      const success = document.execCommand('copy');
+      document.body.removeChild(textarea);
+      success ? resolve() : reject(new Error('execCommand failed'));
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
+function attachMacroCopyHandler(container) {
+  container.addEventListener('click', (e) => {
+    const el = e.target.closest('.macro-rule');
+    if (!el) return;
+    const text = el.dataset.macro;
+    copyToClipboard(text).then(() => {
+      el.classList.add('copied');
+      const hint = el.querySelector('.expand-hint');
+      const original = hint.textContent;
+      hint.textContent = '✔ ¡Copiado!';
+      setTimeout(() => {
+        el.classList.remove('copied');
+        hint.textContent = original;
+      }, 1200);
+    }).catch(() => {
+      const hint = el.querySelector('.expand-hint');
+      hint.textContent = 'Error al copiar';
+    });
+  });
+}
+
+/* ============================================================
+   SECCIÓN: REGLAS
+   ============================================================ */
+const container = document.getElementById('container');
+const search = document.getElementById('search');
+const tabsEl = document.getElementById('tabs');
+const countEl = document.getElementById('count');
+
+const categories = [...new Set(rules.map(r => r.cat))];
+let selectedFilters = new Set();
+
+function buildTabs() {
+  let html = `<div class="tab active" data-filter="all">Todos</div>`;
+  categories.forEach(c => {
+    html += `<div class="tab" data-filter="${c}">${c}</div>`;
+  });
+  tabsEl.innerHTML = html;
+  tabsEl.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const filter = tab.dataset.filter;
+      if (filter === 'all') {
+        selectedFilters.clear();
+      } else {
+        if (selectedFilters.has(filter)) {
+          selectedFilters.delete(filter);
+        } else {
+          selectedFilters.add(filter);
+        }
+      }
+      updateTabStyles();
+      renderRules();
+    });
+  });
+  updateTabStyles();
+}
+
+function updateTabStyles() {
+  tabsEl.querySelectorAll('.tab').forEach(tab => {
+    const filter = tab.dataset.filter;
+    if (filter === 'all') {
+      tab.classList.toggle('active', selectedFilters.size === 0);
+    } else {
+      tab.classList.toggle('active', selectedFilters.has(filter));
+    }
+  });
+}
+
+function renderRules() {
+  const q = search.value.trim().toLowerCase();
+  let filtered = rules.filter(r => selectedFilters.size === 0 || selectedFilters.has(r.cat));
+
+  if (q) {
+    filtered = filtered.filter(r =>
+      r.code.toLowerCase().includes(q) ||
+      r.title.toLowerCase().includes(q) ||
+      r.desc.toLowerCase().includes(q) ||
+      r.punish.toLowerCase().includes(q)
+    );
+  }
+
+  countEl.textContent = `${filtered.length} regla${filtered.length !== 1 ? 's' : ''}`;
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="empty-msg">No se encontraron resultados.</div>`;
+    return;
+  }
+
+  const grouped = {};
+  filtered.forEach(r => {
+    if (!grouped[r.cat]) grouped[r.cat] = [];
+    grouped[r.cat].push(r);
+  });
+
+  let html = '';
+  Object.keys(grouped).forEach(cat => {
+    const cls = cat === 'PD' ? 'category-title pd' : 'category-title';
+    html += `<div class="${cls}">${cat === 'PD' ? '🚔 PD — Facción Policial' : cat}</div>`;
+
+    const items = grouped[cat];
+    const hasSub = items.some(r => r.sub);
+
+    if (hasSub) {
+      const subGrouped = {};
+      items.forEach(r => {
+        const key = r.sub || '';
+        if (!subGrouped[key]) subGrouped[key] = [];
+        subGrouped[key].push(r);
+      });
+      Object.keys(subGrouped).forEach(subKey => {
+        if (subKey) html += `<div class="sub-title">${subKey}</div>`;
+        html += '<div class="rules-grid">';
+        subGrouped[subKey].forEach(r => {
+          html += renderRuleCard(r);
+        });
+        html += '</div>';
+      });
+    } else {
+      html += '<div class="rules-grid">';
+      items.forEach(r => {
+        html += renderRuleCard(r);
+      });
+      html += '</div>';
+    }
+  });
+
+  container.innerHTML = html;
+}
+
+search.addEventListener('input', renderRules);
+attachMacroCopyHandler(container);
+
+/* ============================================================
+   SECCIÓN: MACROS
+   ============================================================ */
+const macroContainer = document.getElementById('macroContainer');
+const macroSearch = document.getElementById('macroSearch');
+const macroCountEl = document.getElementById('macroCount');
+
+// ---- "¿Cómo agregar macros?" — video de ayuda (placeholder por ahora) ----
+const MACRO_HELP_VIDEO_URL = "https://www.youtube.com/embed/0Up5vJ1Hryk"; // TODO: reemplazar por el video real cuando esté listo
+const btnComoAgregarMacros = document.getElementById('btnComoAgregarMacros');
+const macroHelpPanel = document.getElementById('macroHelpPanel');
+const macroHelpFrame = document.querySelector('.macro-help-frame');
+
+btnComoAgregarMacros.addEventListener('click', () => {
+  const estaAbierto = !macroHelpPanel.classList.contains('hidden');
+  if (estaAbierto) {
+    macroHelpPanel.classList.add('hidden');
+    macroHelpFrame.src = ''; // corta la reproducción al cerrar
+  } else {
+    macroHelpFrame.src = MACRO_HELP_VIDEO_URL;
+    macroHelpPanel.classList.remove('hidden');
+  }
+});
+
+// ---- Códigos con rol (desbloquean las Macros de Instrucción) ----
+// Ya no viven en ningún archivo: viven en el KV del Worker y se piden en
+// vivo. NIVELES_ROL/rolAlcanza siguen viniendo de codigos.js (no son
+// sensibles, es solo la comparación de niveles).
+const API_URL = "https://asistencia-ejercitolaguna.TU-USUARIO.workers.dev/";
+let instruccionDesbloqueada = false;
+const SUB_INSTRUCCION = "Macros de Instrucción";
+
+async function validarCodigoEnServidor(codigo) {
+  const resp = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ recurso: 'codigos', accion: 'validar', codigo }),
+  });
+  if (!resp.ok) {
+    let msg = 'Código incorrecto.';
+    try { const b = await resp.json(); if (b && b.error) msg = b.error; } catch (e) { /* no era JSON */ }
+    throw new Error(msg);
+  }
+  return await resp.json(); // { nombre, rol }
+}
+
+// ---- Roster de Instructores/Evaluadores (se llena solo desde el Worker) ----
+// Nota: "Evaluadores" acá muestra solo a quienes tienen ese rol exacto (no
+// a los administradores/líder/sublíder, que ya figuran arriba en sus
+// propias categorías), para no repetir nombres en dos categorías a la vez.
+async function poblarRosterAcademia() {
+  const rosterInstructoresEl = document.getElementById('rosterInstructores');
+  const rosterInstructoresPruebaEl = document.getElementById('rosterInstructoresPrueba');
+  const rosterEvaluadoresEl = document.getElementById('rosterEvaluadores');
+  const rosterLiderEl = document.getElementById('rosterLider');
+  const rosterSublideresEl = document.getElementById('rosterSublideres');
+  try {
+    const resp = await fetch(API_URL + (API_URL.includes('?') ? '&' : '?') + 'recurso=codigos', { method: 'GET' });
+    if (!resp.ok) return;
+    const data = await resp.json();
+    if (rosterInstructoresEl) {
+      const instructores = Array.isArray(data.instructores) ? data.instructores : [];
+      rosterInstructoresEl.textContent = instructores.length ? instructores.join(' • ') : '—';
+    }
+    if (rosterInstructoresPruebaEl) {
+      const instructoresPrueba = Array.isArray(data.instructoresPrueba) ? data.instructoresPrueba : [];
+      rosterInstructoresPruebaEl.textContent = instructoresPrueba.length ? instructoresPrueba.join(' • ') : '—';
+    }
+    if (rosterEvaluadoresEl) {
+      const soloEvaluadores = Array.isArray(data.soloEvaluadores) ? data.soloEvaluadores : [];
+      rosterEvaluadoresEl.textContent = soloEvaluadores.length ? soloEvaluadores.join(' • ') : '—';
+    }
+    if (rosterLiderEl) {
+      const lideres = Array.isArray(data.lideres) ? data.lideres : [];
+      rosterLiderEl.textContent = lideres.length ? lideres.join(' • ') : '—';
+    }
+    if (rosterSublideresEl) {
+      const sublideres = Array.isArray(data.sublideres) ? data.sublideres : [];
+      rosterSublideresEl.textContent = sublideres.length ? sublideres.join(' • ') : '—';
+    }
+  } catch (e) { /* deja los guiones, no rompe nada */ }
+}
+poblarRosterAcademia();
+
+// ---- Horarios de Academia (grilla, se llena en vivo desde el Worker) ----
+// El contenido (títulos, horas, instructores/auxiliares/evaluadores, días)
+// se administra desde admin.html; acá solo se pide y se pinta.
+const academiaUpdated = document.getElementById('academiaUpdated');
+
+function fmtUltimaActualizacion(iso) {
+  if (!iso) return '';
+  try {
+    const d = new Date(iso);
+    const fecha = d.toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
+    const hora = d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false });
+    return `Última actualización: ${fecha} · ${hora} hrs`;
+  } catch (e) {
+    return '';
+  }
+}
+
+function renderTurnoCard(t) {
+  const clases = ['turno-card'];
+  if (t.destacado) clases.push('recruit-card');
+  const dataMap = t.mapa ? ` data-map="${escapeAttr(t.mapa)}"` : '';
+  const diasLabelHtml = t.diasLabel
+    ? `<div class="turno-row turno-days"><b>${escapeAttr(t.diasLabel)}</b></div>`
+    : '';
+  const horaHtml = t.hora ? `<div class="turno-row"><b>Hora:</b> ${escapeAttr(t.hora)}</div>` : '';
+  const ubicacionHtml = t.ubicacion
+    ? `<div class="turno-row"><b>Ubicación:</b> ${escapeAttr(t.ubicacion)}</div>`
+    : '';
+  const personasHtml = (t.personas || [])
+    .map(p => `<div class="turno-row"><b>${escapeAttr(p.label)}:</b> ${escapeAttr(p.nombre)}</div>`)
+    .join('');
+  const diasHtml = (t.dias || [])
+    .map(d => `<div class="turno-row turno-days"><b>${escapeAttr(d.dia)}:</b>${escapeAttr(d.texto)}</div>`)
+    .join('');
+  return `<div class="${clases.join(' ')}"${dataMap}>
+    <div class="turno-time">${escapeAttr(t.titulo)}</div>
+    ${diasLabelHtml}
+    ${horaHtml}
+    ${ubicacionHtml}
+    ${personasHtml}
+    ${diasHtml}
+  </div>`;
+}
+
+async function cargarHorariosAcademia() {
+  try {
+    const resp = await fetch(API_URL + (API_URL.includes('?') ? '&' : '?') + 'recurso=horarios', { method: 'GET' });
+    if (!resp.ok) throw new Error('No se pudo cargar');
+    const data = await resp.json();
+    const horarios = Array.isArray(data.horarios) ? data.horarios : [];
+    turnoGrid.innerHTML = horarios.map(renderTurnoCard).join('');
+    academiaUpdated.textContent = fmtUltimaActualizacion(data.ultimaActualizacion) || '';
+  } catch (e) {
+    turnoGrid.innerHTML = '<div class="empty-msg">No se pudieron cargar los horarios. Recargá la página.</div>';
+    academiaUpdated.textContent = '';
+  }
+}
+cargarHorariosAcademia();
+
+/* ============================================================
+   NOTICIAS (feed): publicar solo admin/líder/sublíder (mismo código de
+   la sección Macros de Instrucción, validado en el Worker). Dar 👍 y
+   comentar es libre, solo pide un nombre (se guarda en este navegador
+   para no repreguntarlo cada vez).
+   ============================================================ */
+const noticiasFeed = document.getElementById('noticiasFeed');
+const noticiasTabs = document.getElementById('noticiasTabs');
+const btnAbrirNoticiasComposer = document.getElementById('btnAbrirNoticiasComposer');
+const noticiasComposer = document.getElementById('noticiasComposer');
+const noticiaDivisionInput = document.getElementById('noticiaDivisionInput');
+const noticiaTextoInput = document.getElementById('noticiaTextoInput');
+const noticiaImagenInput = document.getElementById('noticiaImagenInput');
+const noticiaComposerError = document.getElementById('noticiaComposerError');
+const btnCancelarNoticia = document.getElementById('btnCancelarNoticia');
+const btnPublicarNoticia = document.getElementById('btnPublicarNoticia');
+const noticiasLoginOverlay = document.getElementById('noticiasLoginOverlay');
+const noticiasLoginCodeInput = document.getElementById('noticiasLoginCodeInput');
+const noticiasLoginError = document.getElementById('noticiasLoginError');
+const btnCancelarNoticiasLogin = document.getElementById('btnCancelarNoticiasLogin');
+const btnConfirmarNoticiasLogin = document.getElementById('btnConfirmarNoticiasLogin');
+
+let noticiasLista = [];
+let noticiasDivisiones = [];
+let noticiasFiltro = 'Todas';
+let noticiasCodigoAdmin = null; // se guarda en memoria (no persiste al recargar)
+let noticiasNombreAdmin = null;
+let noticiasRolAdmin = null; // { rol, division } de quien inició sesión para publicar/borrar
+
+function noticiasNombreVisitante() {
+  return (localStorage.getItem('noticiasNombreVisitante') || '').trim();
+}
+function pedirNombreVisitante() {
+  let nombre = noticiasNombreVisitante();
+  if (nombre) return nombre;
+  nombre = (prompt('¿Con qué nombre querés participar? (se guarda en este navegador)') || '').trim();
+  if (nombre) localStorage.setItem('noticiasNombreVisitante', nombre);
+  return nombre;
+}
+
+function fmtFechaNoticia(iso) {
+  if (!iso) return '';
+  try {
+    const d = new Date(iso);
+    return d.toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' }) +
+      ' · ' + d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false });
+  } catch (e) { return ''; }
+}
+
+async function postNoticiaAccion(body) {
+  const resp = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ recurso: 'noticias', ...body }),
+  });
+  let data = null;
+  try { data = await resp.json(); } catch (e) { /* no era JSON */ }
+  if (!resp.ok) throw new Error((data && data.error) || 'No se pudo completar la acción.');
+  return data;
+}
+
+function renderNoticiasTabs() {
+  const cats = ['Todas', ...noticiasDivisiones];
+  noticiasTabs.innerHTML = cats.map(c =>
+    `<div class="tab${c === noticiasFiltro ? ' active' : ''}" data-division="${escapeAttr(c)}">${escapeAttr(c)}</div>`
+  ).join('');
+  noticiasTabs.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      noticiasFiltro = t.dataset.division;
+      renderNoticiasTabs();
+      renderNoticiasFeed();
+    });
+  });
+}
+
+// Convierte formato estilo Discord a HTML. SIEMPRE se llama sobre texto
+// que ya pasó por escapeAttr (así & < > " ya están escapados) — acá solo
+// se agregan tags de formato conocidos (b/i/u/s/code/pre/span/div), nunca
+// se inserta HTML crudo del usuario, así que no hay riesgo de XSS.
+function formatNoticiaTexto(escapado) {
+  let text = escapado;
+  const bloques = [];
+  const inline = [];
+
+  // ```bloque de código``` (protegido primero: no se formatea por dentro)
+  text = text.replace(/```([\s\S]*?)```/g, (_, c) => {
+    const i = bloques.push(`<pre class="noticia-codeblock"><code>${c.replace(/^\n/, '')}</code></pre>`) - 1;
+    return `\u0000B${i}\u0000`;
+  });
+  // `código en línea`
+  text = text.replace(/`([^`\n]+)`/g, (_, c) => {
+    const i = inline.push(`<code class="noticia-inlinecode">${c}</code>`) - 1;
+    return `\u0000I${i}\u0000`;
+  });
+
+  text = text
+    .replace(/\*\*([^\n]+?)\*\*/g, '<b>$1</b>')          // **negrita**
+    .replace(/__([^\n]+?)__/g, '<u>$1</u>')                // __subrayado__
+    .replace(/~~([^\n]+?)~~/g, '<s>$1</s>')                // ~~tachado~~
+    .replace(/\*([^\n*]+?)\*/g, '<i>$1</i>')               // *cursiva*
+    .replace(/(?<![\w])_([^\n_]+?)_(?![\w])/g, '<i>$1</i>') // _cursiva_
+    .replace(/\|\|([^\n]+?)\|\|/g, '<span class="noticia-spoiler" onclick="this.classList.toggle(\'revelado\')">$1</span>'); // ||spoiler||
+
+  // > cita (una línea)
+  text = text.split('\n').map(linea => {
+    const m = linea.match(/^&gt;\s?(.*)$/);
+    return m ? `<div class="noticia-quote">${m[1]}</div>` : linea;
+  }).join('\n');
+
+  text = text.replace(/\u0000I(\d+)\u0000/g, (_, i) => inline[+i]);
+  text = text.replace(/\u0000B(\d+)\u0000/g, (_, i) => bloques[+i]);
+  return text;
+}
+
+function renderNoticiaCard(n) {
+  const yaLeDioLike = n.likes.includes(noticiasNombreVisitante());
+  const imagenHtml = n.imagen ? `<img class="noticia-imagen" src="${escapeAttr(n.imagen)}" alt="" loading="lazy">` : '';
+  // El botón de borrar solo aparece si quien inició sesión puede gestionar
+  // Noticias justo en la división de ESTA noticia (líder/sublíder de
+  // división: solo la suya; Federal General/Adjunto y administrador:
+  // cualquiera — ver puedeGestionarNoticiasEnDivision en codigos.js).
+  const borrarBtnHtml = puedeGestionarNoticiasEnDivision(noticiasRolAdmin, n.division)
+    ? `<button class="noticia-borrar-btn" data-borrar="${escapeAttr(n.id)}" title="Borrar noticia">🗑️</button>`
+    : '';
+  const comentariosHtml = n.comentarios.map(c =>
+    `<div class="noticia-comentario"><b>${escapeAttr(c.autor)}:</b> ${escapeAttr(c.texto)}</div>`
+  ).join('') || '<div class="noticia-comentario" style="color:var(--muted); border:none;">Sé el primero en comentar.</div>';
+
+  return `<div class="noticia-card" data-id="${escapeAttr(n.id)}">
+    <div class="noticia-card-top">
+      <span class="noticia-division">${escapeAttr(n.division)}</span>
+      ${borrarBtnHtml}
+    </div>
+    <div class="noticia-autor">${escapeAttr(n.autor)} · ${fmtFechaNoticia(n.fecha)}</div>
+    <div class="noticia-texto">${formatNoticiaTexto(escapeAttr(n.texto))}</div>
+    ${imagenHtml}
+    <div class="noticia-acciones">
+      <button class="noticia-like-btn${yaLeDioLike ? ' liked' : ''}" data-like="${escapeAttr(n.id)}">👍 ${n.likes.length}</button>
+      <button class="noticia-comentar-toggle" data-toggle="${escapeAttr(n.id)}">💬 ${n.comentarios.length} comentario${n.comentarios.length !== 1 ? 's' : ''}</button>
+    </div>
+    <div class="noticia-comentarios" id="comentarios-${escapeAttr(n.id)}">
+      ${comentariosHtml}
+      <div class="noticia-comentario-form">
+        <input type="text" maxlength="500" placeholder="Escribí un comentario..." data-comentar-input="${escapeAttr(n.id)}">
+        <button data-comentar-btn="${escapeAttr(n.id)}">Enviar</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderNoticiasFeed() {
+  const lista = noticiasFiltro === 'Todas' ? noticiasLista : noticiasLista.filter(n => n.division === noticiasFiltro);
+  if (!lista.length) {
+    noticiasFeed.innerHTML = '<div class="empty-msg">No hay noticias para mostrar.</div>';
+    return;
+  }
+  noticiasFeed.innerHTML = lista.map(renderNoticiaCard).join('');
+}
+
+async function cargarNoticias() {
+  try {
+    const resp = await fetch(API_URL + (API_URL.includes('?') ? '&' : '?') + 'recurso=noticias', { method: 'GET' });
+    if (!resp.ok) throw new Error('No se pudo cargar');
+    const data = await resp.json();
+    noticiasLista = Array.isArray(data.noticias) ? data.noticias : [];
+    noticiasDivisiones = Array.isArray(data.divisiones) ? data.divisiones : [];
+    poblarNoticiaDivisionInput();
+    renderNoticiasTabs();
+    renderNoticiasFeed();
+  } catch (e) {
+    noticiasFeed.innerHTML = '<div class="empty-msg">No se pudieron cargar las noticias. Recargá la página.</div>';
+  }
+}
+cargarNoticias();
+
+// Llena el selector de división del composer solo con las divisiones en
+// las que la persona logueada puede publicar (ver
+// divisionesNoticiasPermitidas en codigos.js) — antes de loguearse, o si
+// no puede publicar en ninguna, queda vacío.
+function poblarNoticiaDivisionInput() {
+  if (!noticiaDivisionInput) return;
+  const todas = noticiasDivisiones.length ? noticiasDivisiones : DIVISIONES_ROL;
+  const permitidas = divisionesNoticiasPermitidas(noticiasRolAdmin, todas);
+  noticiaDivisionInput.innerHTML = permitidas.map(d => `<option value="${escapeAttr(d)}">${escapeAttr(d)}</option>`).join('');
+}
+
+// ---- Publicar (pide código de líder/sublíder de división, Federal General/Adjunto o administrador) ----
+btnAbrirNoticiasComposer.addEventListener('click', () => {
+  if (noticiasCodigoAdmin) {
+    noticiasComposer.classList.remove('hidden');
+    return;
+  }
+  noticiasLoginError.textContent = '';
+  noticiasLoginCodeInput.value = '';
+  noticiasLoginOverlay.classList.remove('hidden');
+  noticiasLoginCodeInput.focus();
+});
+btnCancelarNoticiasLogin.addEventListener('click', () => noticiasLoginOverlay.classList.add('hidden'));
+btnConfirmarNoticiasLogin.addEventListener('click', async () => {
+  const codigo = noticiasLoginCodeInput.value.trim();
+  if (!codigo) return;
+  try {
+    const usuario = await validarCodigoEnServidor(codigo);
+    const todas = noticiasDivisiones.length ? noticiasDivisiones : DIVISIONES_ROL;
+    if (divisionesNoticiasPermitidas(usuario, todas).length === 0) {
+      noticiasLoginError.textContent = 'Ese código no tiene permisos para publicar noticias.';
+      return;
+    }
+    noticiasCodigoAdmin = codigo;
+    noticiasNombreAdmin = usuario.nombre;
+    noticiasRolAdmin = usuario;
+    poblarNoticiaDivisionInput();
+    noticiasLoginOverlay.classList.add('hidden');
+    noticiasComposer.classList.remove('hidden');
+    renderNoticiasFeed(); // para que aparezcan los botones de borrar que le correspondan
+  } catch (e) {
+    noticiasLoginError.textContent = e.message || 'Código incorrecto.';
+  }
+});
+noticiasLoginCodeInput.addEventListener('keydown', e => { if (e.key === 'Enter') btnConfirmarNoticiasLogin.click(); });
+
+btnCancelarNoticia.addEventListener('click', () => {
+  noticiasComposer.classList.add('hidden');
+  noticiaTextoInput.value = '';
+  noticiaImagenInput.value = '';
+  noticiaComposerError.textContent = '';
+});
+btnPublicarNoticia.addEventListener('click', async () => {
+  const division = noticiaDivisionInput.value;
+  const texto = noticiaTextoInput.value.trim();
+  const imagen = noticiaImagenInput.value.trim();
+  if (!texto) {
+    noticiaComposerError.textContent = 'Escribí el texto de la noticia.';
+    return;
+  }
+  noticiaComposerError.textContent = '';
+  try {
+    const data = await postNoticiaAccion({ accion: 'publicar', codigoAdmin: noticiasCodigoAdmin, division, texto, imagen });
+    noticiasLista = data.noticias;
+    noticiaTextoInput.value = '';
+    noticiaImagenInput.value = '';
+    noticiasComposer.classList.add('hidden');
+    renderNoticiasFeed();
+  } catch (e) {
+    noticiaComposerError.textContent = e.message || 'No se pudo publicar.';
+  }
+});
+
+// ---- Borrar / 👍 / comentar (delegado en el feed) ----
+noticiasFeed.addEventListener('click', async e => {
+  const borrarBtn = e.target.closest('[data-borrar]');
+  if (borrarBtn) {
+    if (!confirm('¿Borrar esta noticia?')) return;
+    try {
+      const data = await postNoticiaAccion({ accion: 'eliminar', codigoAdmin: noticiasCodigoAdmin, id: borrarBtn.dataset.borrar });
+      noticiasLista = data.noticias;
+      renderNoticiasFeed();
+    } catch (e2) { alert(e2.message || 'No se pudo borrar.'); }
+    return;
+  }
+
+  const likeBtn = e.target.closest('[data-like]');
+  if (likeBtn) {
+    const nombre = pedirNombreVisitante();
+    if (!nombre) return;
+    try {
+      const data = await postNoticiaAccion({ accion: 'like', id: likeBtn.dataset.like, nombre });
+      noticiasLista = data.noticias;
+      renderNoticiasFeed();
+    } catch (e2) { alert(e2.message || 'No se pudo dar 👍.'); }
+    return;
+  }
+
+  const toggleBtn = e.target.closest('[data-toggle]');
+  if (toggleBtn) {
+    const panel = document.getElementById('comentarios-' + toggleBtn.dataset.toggle);
+    if (panel) panel.classList.toggle('open');
+    return;
+  }
+
+  const comentarBtn = e.target.closest('[data-comentar-btn]');
+  if (comentarBtn) {
+    const id = comentarBtn.dataset.comentarBtn;
+    const input = noticiasFeed.querySelector(`[data-comentar-input="${id}"]`);
+    const texto = input ? input.value.trim() : '';
+    if (!texto) return;
+    const nombre = pedirNombreVisitante();
+    if (!nombre) return;
+    try {
+      const data = await postNoticiaAccion({ accion: 'comentar', id, nombre, texto });
+      noticiasLista = data.noticias;
+      renderNoticiasFeed();
+      const panel = document.getElementById('comentarios-' + id);
+      if (panel) panel.classList.add('open');
+    } catch (e2) { alert(e2.message || 'No se pudo comentar.'); }
+  }
+});
+noticiasFeed.addEventListener('keydown', e => {
+  const input = e.target.closest('[data-comentar-input]');
+  if (input && e.key === 'Enter') {
+    const id = input.dataset.comentarInput;
+    const btn = noticiasFeed.querySelector(`[data-comentar-btn="${id}"]`);
+    if (btn) btn.click();
+  }
+});
+
+function renderMacros() {
+  const q = macroSearch.value.trim().toLowerCase();
+  let filtered = macros;
+  if (q) {
+    filtered = macros.filter(m => m.label.toLowerCase().includes(q) || m.macroText.toLowerCase().includes(q));
+  }
+  macroCountEl.textContent = `${filtered.length} macro${filtered.length !== 1 ? 's' : ''}`;
+  if (filtered.length === 0) {
+    macroContainer.innerHTML = `<div class="empty-msg">No se encontraron resultados.</div>`;
+    return;
+  }
+  const subGrouped = {};
+  filtered.forEach(m => {
+    const key = m.sub || '';
+    if (!subGrouped[key]) subGrouped[key] = [];
+    subGrouped[key].push(m);
+  });
+  let html = '';
+  Object.keys(subGrouped).forEach(subKey => {
+    if (subKey === SUB_INSTRUCCION && !instruccionDesbloqueada) {
+      html += `<div class="sub-title">${subKey}</div>`;
+      html += `<div class="macro-locked-card">
+        <div class="macro-locked-title">🔒 Macros de Instrucción ocultas</div>
+        <div class="macro-locked-sub">Requieren código de instructor.</div>
+        <button class="macro-locked-btn" id="btnMostrarInstruccion">Mostrar</button>
+      </div>`;
+      return;
+    }
+    if (subKey) html += `<div class="sub-title">${subKey}</div>`;
+    html += '<div class="rules-grid">';
+    subGrouped[subKey].forEach(m => { html += renderRuleCard(m); });
+    html += '</div>';
+  });
+  macroContainer.innerHTML = html;
+
+  const btnMostrar = document.getElementById('btnMostrarInstruccion');
+  if (btnMostrar) btnMostrar.addEventListener('click', abrirModalInstructor);
+}
+
+// ---- Modal de código de instructor ----
+const instructorModalOverlay = document.getElementById('instructorModalOverlay');
+const instructorCodeInput = document.getElementById('instructorCodeInput');
+const instructorModalError = document.getElementById('instructorModalError');
+const btnCancelarInstructorCodigo = document.getElementById('btnCancelarInstructorCodigo');
+const btnConfirmarInstructorCodigo = document.getElementById('btnConfirmarInstructorCodigo');
+
+function abrirModalInstructor() {
+  instructorCodeInput.value = '';
+  instructorModalError.textContent = '';
+  instructorModalOverlay.classList.remove('hidden');
+  instructorCodeInput.focus();
+}
+
+function cerrarModalInstructor() {
+  instructorModalOverlay.classList.add('hidden');
+}
+
+async function confirmarCodigoInstructor() {
+  const codigo = instructorCodeInput.value.trim();
+  btnConfirmarInstructorCodigo.disabled = true;
+  try {
+    const usuario = await validarCodigoEnServidor(codigo);
+    if (usuario && (usuario.rol === 'instructor_prueba' || rolAlcanza(usuario.rol, 'instructor', usuario.division))) {
+      instruccionDesbloqueada = true;
+      cerrarModalInstructor();
+      renderMacros();
+    } else {
+      instructorModalError.textContent = 'Código incorrecto.';
+      instructorCodeInput.value = '';
+      instructorCodeInput.focus();
+    }
+  } catch (e) {
+    instructorModalError.textContent = e && e.message ? e.message : 'Código incorrecto.';
+    instructorCodeInput.value = '';
+    instructorCodeInput.focus();
+  } finally {
+    btnConfirmarInstructorCodigo.disabled = false;
+  }
+}
+
+btnCancelarInstructorCodigo.addEventListener('click', cerrarModalInstructor);
+btnConfirmarInstructorCodigo.addEventListener('click', confirmarCodigoInstructor);
+instructorCodeInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') confirmarCodigoInstructor();
+});
+instructorModalOverlay.addEventListener('click', e => {
+  if (e.target === instructorModalOverlay) cerrarModalInstructor();
+});
+
+macroSearch.addEventListener('input', renderMacros);
+attachMacroCopyHandler(macroContainer);
+
+/* ============================================================
+   NAVEGACIÓN ENTRE SECCIONES
+   ============================================================ */
+const mainNav = document.getElementById('mainNav');
+const sections = {
+  reglas: document.getElementById('section-reglas'),
+  macros: document.getElementById('section-macros'),
+  horario: document.getElementById('section-horario'),
+  academia: document.getElementById('section-academia'),
+  noticias: document.getElementById('section-noticias'),
+};
+
+function showSection(name) {
+  Object.keys(sections).forEach(key => {
+    sections[key].classList.toggle('active', key === name);
+  });
+  mainNav.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.section === name);
+  });
+}
+
+mainNav.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => showSection(btn.dataset.section));
+});
+
+/* ============================================================
+   INICIALIZACIÓN
+   ============================================================ */
+buildTabs();
+renderRules();
+renderMacros();
+showSection('macros');
+
+/* ============================================================
+   ACADEMIA: visor de mapa por ubicación
+   ============================================================ */
+const academiaSchedule = document.getElementById('academiaSchedule');
+const academiaMap = document.getElementById('academiaMap');
+const academiaBg = document.getElementById('academiaBg');
+const closeMapBtn = document.getElementById('closeMapBtn');
+const mapFrameInner = document.getElementById('mapFrameInner');
+
+const mapsData = {
+  'sala-revista': {
+    tag: 'PISO 2',
+    img: 'piso2.webp',
+    markers: [
+      { x: 74.5, y: 58, label: 'Ascensores' },
+      { x: 29, y: 85, label: 'Aquí es la clase' },
+    ],
+  },
+  // 'vestidores': pendiente — se agrega cuando esté el mapa correspondiente.
+};
+
+function renderMap(key) {
+  const data = mapsData[key];
+  if (!data) {
+    mapFrameInner.innerHTML = `<div class="map-pending">🚧 MAPA DE "${key.toUpperCase()}" — PRÓXIMAMENTE</div>`;
+    return;
+  }
+  let markersHtml = '';
+  data.markers.forEach(m => {
+    markersHtml += `
+      <div class="map-marker-wrap" style="left:${m.x}%; top:${m.y}%;">
+        <span class="map-marker-ring"></span>
+        <span class="map-marker-dot"></span>
+      </div>
+      <div class="map-marker-label" style="left:${m.x}%; top:${m.y}%;">${m.label}</div>`;
+  });
+  mapFrameInner.innerHTML = `
+    <span class="map-corner map-corner-tl"></span>
+    <span class="map-corner map-corner-tr"></span>
+    <span class="map-corner map-corner-bl"></span>
+    <span class="map-corner map-corner-br"></span>
+    <div class="map-hud-tag">${data.tag}</div>
+    <img src="${data.img}" alt="Mapa">
+    ${markersHtml}`;
+}
+
+function openMap(key) {
+  renderMap(key);
+  academiaSchedule.style.display = 'none';
+  academiaMap.classList.add('active');
+  if (academiaBg) academiaBg.style.display = 'none';
+  if (academiaTwoCol) academiaTwoCol.style.display = 'none';
+  document.body.classList.add('mapa-fullscreen');
+}
+
+// Delegado en el contenedor (en vez de engancharse a cada .turno-card):
+// la grilla se arma en vivo con los horarios que vienen del Worker, así
+// que las tarjetas no existen todavía cuando corre este script.
+const turnoGrid = document.getElementById('turnoGrid');
+turnoGrid.addEventListener('click', e => {
+  const card = e.target.closest('.turno-card[data-map]');
+  if (card) openMap(card.dataset.map);
+});
+
+closeMapBtn.addEventListener('click', () => {
+  academiaMap.classList.remove('active');
+  academiaSchedule.style.display = '';
+  if (academiaBg) academiaBg.style.display = '';
+  if (academiaTwoCol) academiaTwoCol.style.display = '';
+  document.body.classList.remove('mapa-fullscreen');
+});
+
+/* ---- Lista de asistencias (iframe con pestañas Asistencias/Tenientes/Capitanes/Mayores) ---- */
+const academiaAttendance = document.getElementById('academiaAttendance');
+const closeAttendanceBtn = document.getElementById('closeAttendanceBtn');
+const attendanceIframe = document.querySelector('.attendance-iframe');
+const listaTabs = document.querySelectorAll('#academiaAttendance .eval-tab');
+const academiaTwoCol = document.querySelector('.academia-two-col');
+
+function ocultarPanelesAcademia() {
+  academiaSchedule.style.display = 'none';
+  if (academiaTwoCol) academiaTwoCol.style.display = 'none';
+  // Se oculta el sello de fondo de Academia acá: cada lista (asistencias,
+  // tenientes, capitanes, mayores) ya trae su propio sello de fondo, y si
+  // se dejan los dos activos a la vez se superponen y queda sucio, sobre
+  // todo cuando la lista tiene pocas filas y no llega a cubrirlo del todo.
+  if (academiaBg) academiaBg.style.display = 'none';
+}
+function mostrarGridAcademia() {
+  academiaSchedule.style.display = '';
+  if (academiaTwoCol) academiaTwoCol.style.display = '';
+  if (academiaBg) academiaBg.style.display = '';
+}
+
+function openAttendance() {
+  academiaEvaluaciones.classList.remove('active');
+  academiaTemario.classList.remove('active');
+  ocultarPanelesAcademia();
+  academiaAttendance.classList.add('active');
+}
+
+document.querySelectorAll('.turno-card[data-action="asistencias"]').forEach(card => {
+  card.addEventListener('click', openAttendance);
+});
+
+closeAttendanceBtn.addEventListener('click', () => {
+  academiaAttendance.classList.remove('active');
+  mostrarGridAcademia();
+});
+
+listaTabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    if (tab.classList.contains('active')) return;
+    listaTabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    attendanceIframe.src = tab.dataset.lista;
+  });
+});
+
+/* ---- Evaluaciones (visor único de solo lectura) ---- */
+const academiaEvaluaciones = document.getElementById('academiaEvaluaciones');
+const closeEvaluacionesBtn = document.getElementById('closeEvaluacionesBtn');
+const evaluacionesIframe = document.querySelector('.evaluaciones-iframe');
+
+function openEvaluaciones() {
+  academiaAttendance.classList.remove('active');
+  academiaTemario.classList.remove('active');
+  ocultarPanelesAcademia();
+  academiaEvaluaciones.classList.add('active');
+}
+
+document.querySelectorAll('.turno-card[data-action="evaluaciones"]').forEach(card => {
+  card.addEventListener('click', openEvaluaciones);
+});
+
+closeEvaluacionesBtn.addEventListener('click', () => {
+  academiaEvaluaciones.classList.remove('active');
+  mostrarGridAcademia();
+});
+
+/* ---- Temario (4 módulos, contenido estático) ---- */
+const academiaTemario = document.getElementById('academiaTemario');
+const closeTemarioBtn = document.getElementById('closeTemarioBtn');
+
+function openTemario() {
+  academiaAttendance.classList.remove('active');
+  academiaEvaluaciones.classList.remove('active');
+  ocultarPanelesAcademia();
+  academiaTemario.classList.add('active');
+}
+
+document.querySelectorAll('.turno-card[data-action="temario"]').forEach(card => {
+  card.addEventListener('click', openTemario);
+});
+
+closeTemarioBtn.addEventListener('click', () => {
+  academiaTemario.classList.remove('active');
+  mostrarGridAcademia();
+});
+
+// ------------------------------------------------------------------
+// Modal de las listas embebidas (asistencias/tenientes/capitanes/mayores/
+// coroneles/evaluaciones): posicionarlo SIN tocar el iframe para nada.
+//
+// Antes intentábamos poner el iframe en pantalla completa cuando se abría
+// un modal adentro, para que el "position: fixed" del modal quedara
+// relativo a la pantalla real. Funcionaba, pero tenía un efecto secundario
+// feo: al cubrir toda la ventana, tapaba el resto de esta página (menú,
+// header) — se sentía como si hubieras salido de index.html.
+//
+// En vez de eso: le avisamos constantemente al iframe qué franja vertical
+// de él mismo es la que está realmente visible en pantalla ahora mismo
+// (según nuestro propio scroll acá afuera). El iframe usa ese dato para
+// dibujar el modal ahí mismo con position:absolute, en vez de position:fixed
+// (que dentro de un iframe tan alto como éste queda relativo a TODO el
+// documento, no a lo que se ve). El iframe en sí no se mueve ni cambia de
+// tamaño en ningún momento — el resto de la página queda intacta.
+// ------------------------------------------------------------------
+function calcularFranjaVisible(iframeEl) {
+  const rect = iframeEl.getBoundingClientRect();
+  // "top" acá es, en coordenadas INTERNAS del documento del iframe, dónde
+  // arranca lo que se ve ahora mismo en la ventana real. Si el iframe
+  // todavía no llegó a la parte de arriba de la pantalla (rect.top >= 0),
+  // lo que se ve es directamente su propio inicio (0).
+  const top = Math.max(0, -rect.top);
+  const alto = window.innerHeight;
+  return { top, alto };
+}
+
+function avisarFranjaVisible(iframeEl) {
+  if (!iframeEl || !iframeEl.contentWindow) return;
+  const { top, alto } = calcularFranjaVisible(iframeEl);
+  try {
+    iframeEl.contentWindow.postMessage({ tipo: 'franja-visible', top, alto }, '*');
+  } catch (e) { /* ignorar */ }
+}
+
+let franjaRafPendiente = false;
+function programarAvisoFranjas() {
+  if (franjaRafPendiente) return;
+  franjaRafPendiente = true;
+  requestAnimationFrame(() => {
+    franjaRafPendiente = false;
+    avisarFranjaVisible(attendanceIframe);
+    avisarFranjaVisible(evaluacionesIframe);
+  });
+}
+
+// Reavisamos en cualquier momento en que la franja visible pudo haber
+// cambiado: al scrollear, al cambiar el tamaño de la ventana, y en
+// cualquier click (cubre cambios de pestaña/sección dentro de esta misma
+// página, que también pueden mover al iframe de lugar).
+window.addEventListener('scroll', programarAvisoFranjas, { passive: true });
+window.addEventListener('resize', programarAvisoFranjas);
+document.addEventListener('click', programarAvisoFranjas, true);
+if (attendanceIframe) attendanceIframe.addEventListener('load', () => avisarFranjaVisible(attendanceIframe));
+if (evaluacionesIframe) evaluacionesIframe.addEventListener('load', () => avisarFranjaVisible(evaluacionesIframe));
+programarAvisoFranjas();
+
+// Los iframes de asistencias.html / tenientes.html / capitanes.html avisan su
+// altura real (incluyendo popups abiertos) vía postMessage; acá la aplicamos
+// para que no haya doble scroll ni recortes. También pueden pedirnos la
+// franja visible de una — la respondemos al toque en vez de esperar al
+// próximo scroll/resize, para que el modal tenga el dato apenas se abre.
+window.addEventListener('message', e => {
+  if (!e.data) return;
+  let iframeOrigen = null;
+  if (attendanceIframe && e.source === attendanceIframe.contentWindow) iframeOrigen = attendanceIframe;
+  else if (evaluacionesIframe && e.source === evaluacionesIframe.contentWindow) iframeOrigen = evaluacionesIframe;
+  if (!iframeOrigen) return;
+
+  if (e.data.tipo === 'asistencias-alto') {
+    iframeOrigen.style.height = Math.max(320, e.data.alto) + 'px';
+  }
+  if (e.data.tipo === 'pedir-franja-visible') {
+    avisarFranjaVisible(iframeOrigen);
+  }
+});
+
+
+
+
+/* El bloqueo de scroll de fondo al abrir un modal se sacó a pedido. */
+</script>
+
+<footer class="pd-footer">
+  <p>Herramienta de referencia no oficial, hecha por y para jugadores del Ejército de Orange (OneState RP).</p>
+  <p>No afiliado ni respaldado oficialmente por ChillGaming, Ltd.</p>
+  <p>Las imágenes y recursos visuales utilizados pertenecen a sus respectivos propietarios y se muestran únicamente con fines informativos y comunitarios.</p>
+  <p>Última actualización: Julio 2026</p>
+</footer>
+
+</body>
+</html>

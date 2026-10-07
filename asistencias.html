@@ -1,0 +1,2503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lista de Uniformados — Academia Militar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0f0c;
+    --card: #121a15;
+    --border: #223a2a;
+    --text: #dcebdc;
+    --muted: #7fa384;
+    --accent: #3f7d32;
+    --accent2: #8fd14f;
+    --green: #4ade80;
+    --yellow: #ffd94d;
+    --red: #ff6b6b;
+  }
+  * { box-sizing: border-box; }
+  .hidden { display: none !important; }
+  body {
+    position: relative;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 14px;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url('academy_seal.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain;
+    opacity: 0.13;
+    z-index: -1;
+    pointer-events: none;
+  }
+    h1 {
+    font-family: 'Bebas Neue', -apple-system, sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 0.04em;
+    color: var(--accent2);
+    text-align: center;
+    margin: 4px 0 2px 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .title-icon {
+    width: 32px;
+    height: 32px;
+  }
+  .subtitle {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.78rem;
+    margin-bottom: 14px;
+  }
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .toolbar input, .toolbar select {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 0;
+    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+    font-size: 0.85rem;
+  }
+  .toolbar input[type="text"] { flex: 1; min-width: 140px; }
+  .toolbar input:focus, .toolbar select:focus { outline: none; border-color: var(--accent); }
+
+  .accion-bar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 14px;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .modo-edicion-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #2a2416;
+    border: 1px solid var(--accent);
+    color: var(--accent2);
+    padding: 7px 12px;
+    font-size: 0.75rem;
+  }
+  .modo-edicion-badge.hidden { display: none; }
+  .modo-edicion-badge b { color: var(--text); }
+  .btn-salir-edicion {
+    background: none;
+    border: 1px solid var(--accent);
+    color: var(--accent2);
+    padding: 3px 9px;
+    font-size: 0.7rem;
+    cursor: pointer;
+  }
+  .btn-salir-edicion:hover { background: var(--accent); color: #06170d; }
+  .btn {
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    padding: 9px 16px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+  }
+  .btn-primario {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #06170d;
+  }
+  .btn-primario:hover { background: var(--accent2); }
+  .btn-secundario:hover { border-color: var(--muted); }
+  .btn-registrar {
+    background: #1e3a2e;
+    border-color: #3ea86b;
+    color: var(--green);
+  }
+  .btn-registrar:hover { background: #234a37; }
+  .btn-refrescar {
+    background: var(--card);
+    border-color: var(--border);
+    color: var(--text);
+  }
+  .btn-refrescar:hover { border-color: var(--accent2); color: var(--accent2); }
+  .btn-editar-global {
+    background: #2a2416;
+    border-color: var(--accent);
+    color: var(--accent2);
+  }
+  .btn-editar-global:hover { background: #3a3320; }
+  .btn-editar-global.hidden { display: none; }
+  .btn-reporte {
+    background: #1a2a38;
+    border-color: #3e7ea8;
+    color: #7ec4f0;
+  }
+  .btn-reporte:hover { background: #20374a; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(26, 29, 36, 0.55);
+    border: 1px solid var(--border);
+  }
+  th {
+    text-align: left;
+    padding: 9px 10px;
+    background: #22252e;
+    color: var(--muted);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 1px solid var(--border);
+  }
+  th.num, td.num { text-align: center; }
+  td {
+    padding: 9px 10px;
+    border-top: 1px solid var(--border);
+    font-size: 0.82rem;
+  }
+  tr:hover td { background: #20232c; }
+  .rank {
+    color: var(--muted);
+    font-size: 0.72rem;
+    width: 28px;
+  }
+  .puntos {
+    font-weight: 700;
+    color: var(--red);
+  }
+  tr.destacada td {
+    background: #1e3a2e;
+    border-top-color: #3ea86b;
+  }
+  tr.destacada:hover td { background: #234a37; }
+  tr.destacada .puntos { color: var(--green); }
+  tr.destacada td:first-child { border-left: 3px solid #3ea86b; }
+  .badge-lista {
+    display: inline-block;
+    margin-left: 6px;
+    font-size: 0.65rem;
+    color: var(--green);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .marca-llamada {
+    display: inline-block;
+    margin-left: 6px;
+    color: var(--red);
+    font-weight: 900;
+    font-size: 1.15rem;
+    line-height: 1;
+    vertical-align: middle;
+  }
+  .nombre-cell.tiene-llamada {
+    color: var(--red);
+  }
+  .nombre-cell.tiene-llamada:hover {
+    color: var(--red);
+  }
+  .col-eliminar { display: none; }
+  #tablaAsistencias.modo-edicion .col-eliminar { display: table-cell; }
+  .btn-eliminar-fila {
+    color: var(--red);
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 2px 10px;
+  }
+  .btn-eliminar-fila:hover { text-shadow: 0 0 6px var(--red); }
+  .nombre-cell { cursor: pointer; }
+  .nombre-cell:hover { color: var(--accent2); text-decoration: underline; }
+  .editar-valor {
+    flex: 1;
+    text-align: center;
+    padding: 9px 6px;
+    border: 1px solid var(--border);
+    background: #14161b;
+    font-weight: 700;
+  }
+  .dot {
+    cursor: help;
+    font-size: 0.85rem;
+  }
+  .count-mobile { display: none; }
+  @media (max-width: 640px) {
+    .dots-desktop { display: none; }
+    .count-mobile {
+      display: inline-block;
+      white-space: nowrap;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .count-mobile.count-verde { color: var(--green); }
+    .count-mobile.count-amarillo { color: var(--yellow); }
+    .count-mobile.count-procedimientos { color: #4d9fff; }
+    td.col-verde, td.col-amarillo { width: 58px; text-align: center; }
+  }
+  #customTooltip {
+    position: fixed;
+    z-index: 300;
+    display: none;
+    background: var(--card);
+    border: 1px solid var(--accent);
+    color: var(--text);
+    padding: 7px 11px;
+    font-size: 0.72rem;
+    line-height: 1.5;
+    max-width: 230px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+    clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+    pointer-events: none;
+  }
+  #customTooltip .tt-tipo {
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  #customTooltip .tt-tipo.verde { color: var(--green); }
+  #customTooltip .tt-tipo.amarillo { color: var(--yellow); }
+  #customTooltip .tt-tipo.llamada { color: var(--red); }
+  #customTooltip .tt-registrador { color: var(--accent2); }
+  #customTooltip .tt-detalle { color: var(--muted); }
+  .count {
+    color: var(--muted);
+    font-size: 0.75rem;
+    margin: 8px 0;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .empty-msg {
+    text-align: center;
+    color: var(--muted);
+    padding: 30px;
+    font-size: 0.85rem;
+  }
+  .note {
+    margin-top: 16px;
+    padding: 10px 12px;
+    background: rgba(26, 29, 36, 0.55);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.72rem;
+    line-height: 1.5;
+  }
+  .note code { color: var(--accent2); }
+  .banner-offline {
+    display: none;
+    background: #3a2320;
+    border: 1px solid var(--red);
+    color: #ffb3b3;
+    padding: 8px 12px;
+    font-size: 0.75rem;
+    margin-bottom: 12px;
+  }
+  .banner-offline.visible { display: block; }
+
+  /* ---------- modales ---------- */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 40px 16px;
+    z-index: 100;
+  }
+  .modal-overlay.hidden { display: none; }
+  .modal-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 20px;
+    width: 100%;
+    max-width: 360px;
+    clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+  }
+  .modal-box-lg { max-width: 560px; }
+  .modal-box h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.03em;
+    color: var(--accent2);
+    font-size: 1.3rem;
+    margin: 0 0 6px 0;
+  }
+  .modal-sub {
+    color: var(--muted);
+    font-size: 0.78rem;
+    margin: 0 0 14px 0;
+    line-height: 1.4;
+  }
+  .modal-sub b { color: var(--green); }
+  .modal-box input[type="text"],
+  .modal-box input[type="date"],
+  .modal-box select,
+  .modal-box textarea {
+    width: 100%;
+    background: #14161b;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 9px 10px;
+    font-size: 0.85rem;
+  }
+  .modal-box textarea {
+    font-family: inherit;
+    resize: vertical;
+  }
+  .modal-box input[type="date"] {
+    color-scheme: dark;
+    -webkit-appearance: auto;
+    appearance: auto;
+    min-height: 38px;
+  }
+  .modal-box input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) brightness(1.6);
+    opacity: 1;
+    cursor: pointer;
+    padding: 4px;
+  }
+  .modal-box input[type="date"]::-webkit-datetime-edit { cursor: pointer; }
+  .reporte-opciones {
+    flex-direction: column;
+    justify-content: stretch;
+  }
+  .reporte-opciones .btn { width: 100%; }
+  .clases-tabla th, .clases-tabla td {
+    font-size: 0.78rem;
+  }
+  .clase-punto-toggle {
+    cursor: pointer;
+    font-size: 1rem;
+    user-select: none;
+  }
+  .clase-quitar {
+    cursor: pointer;
+    color: var(--red);
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+  .modal-box input:focus, .modal-box select:focus { outline: none; border-color: var(--accent); }
+  .modal-error {
+    color: var(--red);
+    font-size: 0.75rem;
+    min-height: 16px;
+    margin-top: 6px;
+  }
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .modal-actions-split {
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  .modal-actions-right {
+    display: flex;
+    gap: 10px;
+  }
+  .modal-actions-left {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .btn-evaluacion {
+    background: #1a2a38;
+    border-color: #3e7ea8;
+    color: #7ec4f0;
+  }
+  .btn-evaluacion:hover { background: #20374a; }
+  .btn-evaluacion:disabled {
+    background: #1a1d24;
+    border-color: var(--border);
+    color: var(--muted);
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  .btn-evaluacion:disabled:hover { background: #1a1d24; }
+  .btn-peligro {
+    background: #3a1414;
+    border-color: var(--red);
+    color: var(--red);
+  }
+  .btn-peligro:hover {
+    background: var(--red);
+    color: #1a0505;
+  }
+  .modal-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+    align-items: flex-end;
+  }
+  .modal-field { flex: 1; min-width: 120px; }
+  .modal-field.flex1 { flex: 2; min-width: 160px; }
+  .modal-field label {
+    display: block;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .tipo-selector { display: flex; gap: 6px; }
+  .tipo-btn {
+    flex: 1;
+    border: 1px solid var(--border);
+    background: #14161b;
+    color: var(--muted);
+    padding: 9px 6px;
+    font-size: 0.78rem;
+    cursor: pointer;
+  }
+  .tipo-btn.tipo-verde.active { background: #1e3a2e; border-color: var(--green); color: var(--green); }
+  .tipo-btn.tipo-amarillo.active { background: #3a3320; border-color: var(--yellow); color: var(--yellow); }
+  .btn-agregar-fila { align-self: flex-end; }
+  .mini-lista-wrap { margin-top: 4px; max-height: 220px; overflow-y: auto; border: 1px solid var(--border); }
+  .mini-lista { width: 100%; border-collapse: collapse; }
+  .mini-lista th {
+    position: sticky; top: 0;
+    background: #22252e; color: var(--muted);
+    font-size: 0.65rem; text-transform: uppercase;
+    padding: 6px 8px; text-align: left;
+  }
+  .mini-lista td { padding: 6px 8px; font-size: 0.8rem; border-top: 1px solid var(--border); }
+  .mini-lista .quitar {
+    cursor: pointer;
+    color: var(--red);
+    font-weight: 700;
+    font-size: 0.8rem;
+  }
+  .mini-lista-empty {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.78rem;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-top: none;
+  }
+
+/* ============================================================
+   HUD RADAR — capa visual añadida (Ejército de Laguna)
+   ============================================================ */
+@keyframes hudSweep { to { transform: rotate(360deg); } }
+@keyframes hudBlip { 0%, 100% { opacity: 0.9; } 50% { opacity: 0.25; } }
+
+body {
+  background-image:
+    linear-gradient(rgba(143,209,79,0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(143,209,79,0.045) 1px, transparent 1px) !important;
+  background-size: 34px 34px !important;
+  background-attachment: fixed;
+}
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.55;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(143,209,79,0.055) 0px,
+    rgba(143,209,79,0.055) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+h1 {
+  font-family: 'Share Tech Mono', 'Bebas Neue', monospace !important;
+  text-shadow: 0 0 6px rgba(143,209,79,0.65), 0 0 22px rgba(143,209,79,0.25);
+}
+.subtitle {
+  font-family: 'Share Tech Mono', monospace !important;
+  letter-spacing: 0.16em !important;
+  text-transform: uppercase;
+  text-shadow: 0 0 6px rgba(143,209,79,0.35);
+}
+.category-title, .roster-title, h2 {
+  font-family: 'Share Tech Mono', monospace !important;
+  letter-spacing: 0.03em;
+}
+thead th, th {
+  font-family: 'Share Tech Mono', monospace !important;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-shadow: 0 0 5px rgba(143,209,79,0.3);
+}
+.btn, .tab, .nav-btn {
+  font-family: 'Share Tech Mono', monospace !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* Radar decorativo fijo — elemento de firma visual */
+.hud-radar {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  width: 96px;
+  height: 96px;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.55;
+}
+.hud-radar .ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(143,209,79,0.28);
+}
+.hud-radar .ring.r1 { inset: 0; }
+.hud-radar .ring.r2 { inset: 18px; }
+.hud-radar .ring.r3 { inset: 36px; }
+.hud-radar .cross {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(143,209,79,0.25), rgba(143,209,79,0.25)) center / 100% 1px no-repeat,
+    linear-gradient(90deg, rgba(143,209,79,0.25), rgba(143,209,79,0.25)) center / 1px 100% no-repeat;
+}
+.hud-radar .sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, rgba(143,209,79,0.55), transparent 28%);
+  animation: hudSweep 4.5s linear infinite;
+}
+.hud-radar .blip {
+  position: absolute;
+  top: 28%;
+  left: 62%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent2);
+  box-shadow: 0 0 6px var(--accent2);
+  animation: hudBlip 2.2s ease-in-out infinite;
+}
+@media (max-width: 640px) { .hud-radar { width: 64px; height: 64px; bottom: 10px; right: 10px; } }
+
+</style>
+</head>
+<body>
+<div class="hud-radar"><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div><div class="cross"></div><div class="sweep"></div><div class="blip"></div></div>
+
+<h1>
+    <img src="1-Uniformado.svg" alt="" class="title-icon">
+    Reclutas - Sargento Mayor
+</h1>
+<div class="subtitle">Academia Militar — Ejército de Laguna</div>
+
+<div class="accion-bar">
+  <button class="btn btn-refrescar" id="btnRefrescarLista">🔄 Refrescar</button>
+  <button class="btn btn-registrar" id="btnAbrirCodigo">🟢 Registrar Asistencia</button>
+  <button class="btn btn-editar-global" id="btnAbrirEdicionGlobal">✏️ Editar</button>
+  <button class="btn btn-reporte hidden" id="btnGenerarReporte">📄 Generar Reporte</button>
+  <span id="modoEdicionBadge" class="modo-edicion-badge hidden">
+    🔓 Modo edición: <b id="modoEdicionNombre"></b>
+    <button class="btn-salir-edicion" id="btnSalirModoEdicion">Salir</button>
+  </span>
+</div>
+
+<div class="modal-overlay hidden" id="modalReporte">
+  <div class="modal-box" id="reporteBoxInicial">
+    <h2>Generar Reporte</h2>
+    <div class="modal-sub">Elegí qué tipo de reporte querés generar.</div>
+    <div class="modal-actions reporte-opciones">
+      <button class="btn btn-primario" id="btnReporteTotal">📊 Reporte Total</button>
+      <button class="btn btn-secundario" id="btnReporteEspecifico">📅 Reporte de Fecha/Clase Específica</button>
+      <button class="btn btn-secundario" id="btnReporteCandidatos">🌟 Candidatos a Ascenso</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secundario" id="btnCancelarReporteInicial">Cancelar</button>
+    </div>
+  </div>
+  <div class="modal-box hidden" id="reporteBoxEspecifico">
+    <h2>Reporte de Clase Específica</h2>
+    <div class="modal-sub">Elegí la fecha y la clase para generar el reporte de asistencia de esa sesión.</div>
+    <div class="modal-row">
+      <div class="modal-field">
+        <label>Fecha</label>
+        <input type="date" id="reporteFecha">
+      </div>
+      <div class="modal-field">
+        <label>Turno</label>
+        <select id="reporteTurno"></select>
+      </div>
+    </div>
+    <div class="modal-error" id="reporteEspecificoError"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secundario" id="btnVolverReporteInicial">Volver</button>
+      <button class="btn btn-primario" id="btnGenerarReporteEspecifico">Generar</button>
+    </div>
+  </div>
+</div>
+
+<div class="banner-offline" id="bannerOffline">⚠ Sin conexión al servidor compartido — mostrando la lista base local. Revisá <code>API_URL</code> en el script (ver SETUP.md).</div>
+
+<div class="toolbar">
+  <input type="text" id="search" placeholder="Buscar por nombre...">
+  <select id="orden">
+    <option value="alfabetico">Orden alfabético (A-Z)</option>
+    <option value="puntos">Mayor puntaje primero</option>
+    <option value="procedimientos">Con Procedimientos aprobada primero</option>
+  </select>
+</div>
+
+<div class="count" id="count"></div>
+<table id="tablaAsistencias">
+  <thead>
+    <tr>
+      <th class="rank">#</th>
+      <th>Nombre</th>
+      <th class="num">🟢</th>
+      <th class="num">🟡</th>
+      <th class="num">Clases</th>
+      <th class="num col-eliminar"></th>
+    </tr>
+  </thead>
+  <tbody id="tbody"></tbody>
+</table>
+
+<div class="note">
+  Al registrar una clase, elegí el rango de cada persona en su fila: así se puede cargar una sola clase con gente mezclada de distintos rangos desde cualquiera de las 5 listas (Asistencias, Tenientes, Capitanes, Mayores, Coroneles) — cada quien queda anotado en su lista correspondiente, no en la que tenías abierta. Pasá el mouse sobre cualquier punto 🟢, 🟡, 🛡️ o ❗ para ver quién lo registró, en qué fecha, turno e instructor (o motivo, si es una llamada de atención). El 🛡️ marca específicamente la clase de Procedimientos cumplida (en vez del punto verde genérico). El ❗ es una llamada de atención: cada una exige una clase verde extra antes de poder evaluar — apenas se registra una clase real, el ❗ se reemplaza solo por la bolita verde correspondiente. Las llamadas se agregan/quitan desde "✏️ Editar" (modo edición). Los que llegan a 6 clases útiles <b>incluyendo Procedimientos</b> (ya descontadas las llamadas sin compensar) se marcan en verde y suben al principio de la lista — la clase de Procedimientos es obligatoria y solo la pueden registrar evaluadores o administradores (no aparece como opción de turno para instructores comunes). Tocá "✏️ Editar" arriba e ingresá tu código de administrador para activar el modo edición: mientras esté activo, podés tocar el nombre de cualquier persona para editarle sus puntos, sus llamadas de atención o su nombre, o la ✕ roja de su fila para eliminarla directamente — sin volver a pedir el código hasta que toques "Salir". Dentro del detalle de cada persona (aunque no estés en modo edición) el botón "📝 Evaluación" te va a pedir tu código de evaluador o administrador, y se habilita recién cuando esa persona llega a 6 clases útiles con la de Procedimientos incluida. Al guardar la evaluación: si <b>reprueba</b>, se queda en Asistencias y se le puede volver a evaluar más adelante; si <b>aprueba</b>, pasa a la lista de Tenientes (con el rango de Teniente asignado automáticamente) y se elimina de esta lista. El botón "📄 Generar Reporte" descarga un archivo de texto con quiénes ya completaron los requisitos, quiénes no asisten hace más de una semana (con la fecha de su última clase) y el resto ordenado por cantidad de clases. Dentro de ese mismo menú, "🌟 Candidatos a Ascenso" arma el anuncio semanal de candidatos a Teniente: quienes ya cumplen los 6 clases útiles + Procedimientos, y aparte quienes tienen 5.5 clases o más pero todavía les falta Procedimientos — en ambos casos solo entran los que no tienen ninguna llamada de atención registrada ni una evaluación reprobada en su historial; a quien le falte cualquiera de esas dos condiciones no aparece en el anuncio aunque tenga las clases.
+</div>
+
+<!-- Modal 1: código de registrador -->
+<div class="modal-overlay hidden" id="modalCodigo">
+  <div class="modal-box">
+    <h2>Código de Registrador</h2>
+    <div class="modal-sub">Ingresá tu código para identificarte antes de registrar asistencias.</div>
+    <input type="password" id="inputCodigo" placeholder="Código..." maxlength="12" autocomplete="off">
+    <div class="modal-error" id="codigoError"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secundario" id="btnCancelarCodigo">Cancelar</button>
+      <button class="btn btn-primario" id="btnContinuarCodigo">Continuar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 2: mini lista de registro -->
+<div class="modal-overlay hidden" id="modalRegistro">
+  <div class="modal-box modal-box-lg">
+    <h2>Registrar Asistencias</h2>
+    <div class="modal-sub" id="registradorInfo"></div>
+
+    <div class="modal-row">
+      <div class="modal-field">
+        <label>Fecha</label>
+        <input type="date" id="inputFecha">
+      </div>
+      <div class="modal-field">
+        <label>Turno</label>
+        <select id="inputTurno"></select>
+      </div>
+      <div class="modal-field">
+        <label>Instructor</label>
+        <select id="inputInstructor"></select>
+      </div>
+    </div>
+
+    <div class="modal-row">
+      <div class="modal-field flex1">
+        <label>Nombre</label>
+        <input type="text" id="inputNombre" list="listaNombres" placeholder="Escribí o elegí un nombre..." autocomplete="off">
+        <datalist id="listaNombres"></datalist>
+      </div>
+      <div class="modal-field">
+        <label>Rango</label>
+        <select id="inputRango">
+          <option value="Uniformado">Uniformado</option>
+          <option value="Teniente">Teniente</option>
+          <option value="Capitán">Capitán</option>
+          <option value="Mayor">Mayor</option>
+          <option value="Coronel">Coronel</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label>Punto</label>
+        <div class="tipo-selector">
+          <button type="button" class="tipo-btn tipo-verde active" data-tipo="verde" id="btnTipoVerde">🟢 Verde</button>
+          <button type="button" class="tipo-btn tipo-amarillo" data-tipo="amarillo" id="btnTipoAmarillo">🟡 Amarillo</button>
+        </div>
+      </div>
+      <button class="btn btn-primario btn-agregar-fila" id="btnAgregarFila">+ Agregar</button>
+    </div>
+    <div class="modal-error" id="nombreError"></div>
+
+    <div class="mini-lista-wrap" id="miniListaWrap">
+      <table class="mini-lista">
+        <thead><tr><th>Nombre</th><th>Rango</th><th>Punto</th><th></th></tr></thead>
+        <tbody id="miniListaBody"></tbody>
+      </table>
+    </div>
+    <div class="mini-lista-empty" id="miniListaEmpty">Todavía no agregaste a nadie.</div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secundario" id="btnCancelarRegistro">Cancelar</button>
+      <button class="btn btn-primario" id="btnConfirmarRegistro">Agregar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 3: código de edición -->
+<div class="modal-overlay hidden" id="modalCodigoEditar">
+  <div class="modal-box">
+    <h2>Código de Administrador</h2>
+    <div class="modal-sub">Ingresá tu código de administrador para editar el registro de cualquier persona.</div>
+    <input type="password" id="inputCodigoEditar" placeholder="Código..." maxlength="12" autocomplete="off">
+    <div class="modal-error" id="codigoEditarError"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secundario" id="btnCancelarCodigoEditar">Cancelar</button>
+      <button class="btn btn-primario" id="btnContinuarCodigoEditar">Continuar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 4: editar valores -->
+<div class="modal-overlay hidden" id="modalEditar">
+  <div class="modal-box modal-box-lg">
+    <h2 id="clasesTitulo">Clases</h2>
+    <div class="modal-sub" id="editarInfo"></div>
+
+    <div class="modal-row" id="clasesAgregarRow">
+      <div class="modal-field">
+        <label>Fecha</label>
+        <input type="date" id="claseNuevaFecha">
+      </div>
+      <div class="modal-field">
+        <label>Turno</label>
+        <select id="claseNuevaTurno"></select>
+      </div>
+      <div class="modal-field">
+        <label>Instructor</label>
+        <select id="claseNuevaInstructor"></select>
+      </div>
+    </div>
+    <div class="modal-row" id="clasesAgregarRow2">
+      <div class="modal-field">
+        <label>Punto</label>
+        <div class="tipo-selector">
+          <button type="button" class="tipo-btn tipo-verde active" data-tipo="verde" id="claseNuevaBtnVerde">🟢 Verde</button>
+          <button type="button" class="tipo-btn tipo-amarillo" data-tipo="amarillo" id="claseNuevaBtnAmarillo">🟡 Amarillo</button>
+        </div>
+      </div>
+      <button class="btn btn-primario btn-agregar-fila" id="btnAgregarClase">+ Agregar Clase</button>
+    </div>
+
+    <div class="mini-lista-wrap" id="clasesListaWrap">
+      <table class="mini-lista clases-tabla">
+        <thead><tr><th>Fecha</th><th>Turno</th><th>Instructor</th><th>Punto</th><th id="clasesAccionHeader"></th></tr></thead>
+        <tbody id="clasesListaBody"></tbody>
+      </table>
+    </div>
+    <div class="mini-lista-empty" id="clasesListaEmpty">Todavía no tiene clases registradas.</div>
+
+    <div class="modal-sub" style="margin-top:14px;">❗ Llamadas de Atención (cada una exige una clase extra para poder evaluar)</div>
+    <div class="modal-row hidden" id="llamadasAgregarRow">
+      <div class="modal-field">
+        <label>Fecha</label>
+        <input type="date" id="llamadaNuevaFecha">
+      </div>
+      <div class="modal-field flex1">
+        <label>Motivo</label>
+        <input type="text" id="llamadaNuevoMotivo" placeholder="Motivo (opcional)...">
+      </div>
+      <button class="btn btn-peligro btn-agregar-fila" id="btnAgregarLlamada">❗ Agregar Llamada</button>
+    </div>
+    <div class="mini-lista-wrap" id="llamadasListaWrap">
+      <table class="mini-lista">
+        <thead><tr><th>Fecha</th><th>Motivo</th><th>Registró</th><th id="llamadasAccionHeader"></th></tr></thead>
+        <tbody id="llamadasListaBody"></tbody>
+      </table>
+    </div>
+    <div class="mini-lista-empty" id="llamadasListaEmpty">No tiene llamadas de atención.</div>
+
+    <div class="modal-row" id="clasesRenombrarRow">
+      <div class="modal-field flex1">
+        <label>Nombre</label>
+        <input type="text" id="inputEditarNombre" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="modal-error" id="editarError"></div>
+
+    <div class="modal-actions modal-actions-split" id="clasesAccionesEdicion">
+      <div class="modal-actions-left">
+        <button class="btn btn-peligro" id="btnEliminarRegistro">🗑 Eliminar Registro</button>
+        <button class="btn btn-evaluacion" id="btnAbrirEvaluacion">📝 Evaluación</button>
+      </div>
+      <div class="modal-actions-right">
+        <button class="btn btn-secundario" id="btnCancelarEditar">Cancelar</button>
+        <button class="btn btn-primario" id="btnGuardarEditar">Guardar</button>
+      </div>
+    </div>
+    <div class="modal-actions" id="clasesAccionesVista">
+      <button class="btn btn-evaluacion" id="btnEvaluarVista">📝 Evaluación</button>
+      <button class="btn btn-secundario" id="btnCerrarVistaClases">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 4b: código de evaluador (para evaluar sin necesitar modo admin) -->
+<div class="modal-overlay hidden" id="modalCodigoEvaluar">
+  <div class="modal-box">
+    <h2>Código de Evaluador</h2>
+    <div class="modal-sub">Ingresá tu código de evaluador o administrador para evaluar a esta persona.</div>
+    <input type="password" id="inputCodigoEvaluar" placeholder="Código..." maxlength="12" autocomplete="off">
+    <div class="modal-error" id="codigoEvaluarError"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secundario" id="btnCancelarCodigoEvaluar">Cancelar</button>
+      <button class="btn btn-primario" id="btnContinuarCodigoEvaluar">Continuar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 5: enviar a evaluación -->
+<div class="modal-overlay hidden" id="modalEvaluacion">
+  <div class="modal-box">
+    <h2>Registrar Evaluación</h2>
+    <div class="modal-sub" id="evaluacionInfo"></div>
+    <div class="modal-row">
+      <div class="modal-field flex1">
+        <label>Resultado</label>
+        <div class="tipo-selector">
+          <button type="button" class="tipo-btn tipo-verde active" data-resultado="aprobado" id="btnResultadoAprobado">✅ Aprobado</button>
+          <button type="button" class="tipo-btn tipo-amarillo" data-resultado="reprobado" id="btnResultadoReprobado">❌ Reprobado</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-row">
+      <div class="modal-field flex1">
+        <label>Evaluador</label>
+        <select id="evaluacionEvaluador"></select>
+      </div>
+    </div>
+    <div class="modal-row">
+      <div class="modal-field flex1">
+        <label>Observaciones</label>
+        <textarea id="evaluacionObservaciones" rows="3" placeholder="Notas de la evaluación (opcional)..."></textarea>
+      </div>
+    </div>
+    <div class="modal-error" id="evaluacionError"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secundario" id="btnCancelarEvaluacion">Cancelar</button>
+      <button class="btn btn-evaluacion" id="btnGuardarEvaluacion">Enviar a Tenientes</button>
+    </div>
+  </div>
+</div>
+
+<div id="customTooltip"></div>
+
+<script src="codigos.js"></script>
+<script>
+// NIVELES_ROL y rolAlcanza vienen de codigos.js (compartido con el resto
+// de las páginas). Los códigos y nombres reales YA NO están en ningún
+// archivo: viven en el KV del Worker y se piden en vivo (ver
+// validarCodigoEnServidor / cargarNombresRoles más abajo). Se administran
+// desde admin.html.
+
+// La clase de Procedimientos es especial: cuenta para las 6 clases, pero es
+// obligatoria (sin ella no alcanza aunque haya 6 o más puntos) y solo la
+// pueden registrar evaluadores o administradores, no instructores comunes.
+const TURNO_PROCEDIMIENTOS = "Procedimientos";
+// Mapeo entre el nombre del rango (el que se elige por fila al registrar
+// una clase) y el recurso/lista donde vive esa gente en el servidor.
+const RANGO_A_RECURSO = { Uniformado: 'asistencias', Teniente: 'tenientes', Capitán: 'capitanes', Mayor: 'mayores', Coronel: 'coroneles' };
+const RECURSO_A_RANGO = { asistencias: 'Uniformado', tenientes: 'Teniente', capitanes: 'Capitán', mayores: 'Mayor', coroneles: 'Coronel' };
+const RECURSO_PROPIO = 'asistencias';
+const RANGO_PROPIO = 'Uniformado';
+
+// restringir = true: si quien se identificó no es administrador, solo puede
+// elegir su propio nombre como evaluador (no puede atribuirle la evaluación
+// a otra persona). Los administradores siempre ven la lista completa.
+function opcionesEvaluadorAsistencia(seleccionado, restringir) {
+  if (restringir && evaluadorIdentificadoRol && evaluadorIdentificadoRol !== 'administrador') {
+    return `<option value="${escapeAttr(evaluadorIdentificado)}" selected>${escapeHtml(evaluadorIdentificado)}</option>`;
+  }
+  return NOMBRES_EVALUADORES.map(n => `<option value="${escapeAttr(n)}" ${n === seleccionado ? 'selected' : ''}>${n}</option>`).join('');
+}
+
+const STORAGE_KEY = 'wspd_asistencias_v1'; // ya no se usa para guardar, solo como respaldo local si el servidor falla
+
+// ⚠️ Reemplazá esto por la URL de tu Worker (ver SETUP.md)
+const API_URL = "https://ejercito-laguna-worker.armylaguna.workers.dev/";
+
+// Valida un código contra el KV del Worker (ya no hay una lista de códigos
+// acá en el archivo). Devuelve { nombre, rol } o tira un error con el
+// mensaje para mostrar tal cual.
+async function validarCodigoEnServidor(codigo) {
+  const resp = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ recurso: 'codigos', accion: 'validar', codigo }),
+  });
+  if (!resp.ok) {
+    let msg = 'Código inválido. Probá de nuevo.';
+    try { const b = await resp.json(); if (b && b.error) msg = b.error; } catch (e) { /* no era JSON */ }
+    throw new Error(msg);
+  }
+  return await resp.json(); // { nombre, rol }
+}
+
+// Nombres de instructores/evaluadores (sin códigos) — se piden una vez al
+// cargar la página y se guardan acá para los desplegables.
+let NOMBRES_INSTRUCTORES = [];
+let NOMBRES_EVALUADORES = [];
+async function cargarNombresRoles() {
+  try {
+    const resp = await fetch(API_URL + (API_URL.includes('?') ? '&' : '?') + 'recurso=codigos', { method: 'GET' });
+    if (!resp.ok) return;
+    const data = await resp.json();
+    NOMBRES_INSTRUCTORES = Array.isArray(data.instructores) ? data.instructores : [];
+    NOMBRES_EVALUADORES = Array.isArray(data.evaluadores) ? data.evaluadores : [];
+  } catch (e) { /* deja los arrays vacíos, no rompe nada */ }
+}
+cargarNombresRoles();
+
+let asistencias = []; // se llena SOLO desde el servidor (KV) — no hay siembra automática
+let servidorConectado = false;
+let ultimaActualizacion = null; // ISO que manda el servidor (hora real de la última escritura)
+
+// Normaliza la respuesta del Worker: soporta tanto el formato nuevo
+// { asistencias, ultimaActualizacion } como, por las dudas, un array pelado.
+function aplicarEstado(data) {
+  if (data && Array.isArray(data.asistencias)) {
+    asistencias = data.asistencias;
+    if (data.ultimaActualizacion) ultimaActualizacion = data.ultimaActualizacion;
+  } else if (Array.isArray(data)) {
+    asistencias = data;
+  }
+}
+
+// Extrae un mensaje de error legible de una respuesta no-ok del Worker.
+async function errorDe(resp) {
+  try {
+    const body = await resp.json();
+    if (body && body.error) return body.error;
+  } catch (e) { /* no era JSON */ }
+  return 'status ' + resp.status;
+}
+
+async function cargarDatosServidor() {
+  if (!API_URL || API_URL.includes('PEGA_AQUI')) {
+    console.warn('Falta configurar API_URL en asistencias.html — usando datos locales sin guardar.');
+    servidorConectado = false;
+    render();
+    return;
+  }
+  try {
+    const resp = await fetch(API_URL, { method: 'GET' });
+    if (!resp.ok) throw new Error(await errorDe(resp));
+    aplicarEstado(await resp.json());
+    servidorConectado = true;
+  } catch (e) {
+    console.error('No se pudo conectar con el servidor de asistencias:', e);
+    servidorConectado = false;
+  }
+  render();
+}
+
+// -------------------- helpers --------------------
+function verdesDe(p) { return p.registros.filter(r => r.tipo === 'verde').length; }
+function amarillosDe(p) { return p.registros.filter(r => r.tipo === 'amarillo').length; }
+function puntos(p) { return verdesDe(p) * 1 + amarillosDe(p) * 0.5; }
+function fmtPuntos(n) { return Number.isInteger(n) ? String(n) : n.toFixed(1); }
+function tieneProcedimientos(p) { return p.registros.some(r => r.turno === TURNO_PROCEDIMIENTOS); }
+function llamadasDe(p) { return Array.isArray(p.llamadas) ? p.llamadas : []; }
+// Cada llamada de atención exige una clase (verde) extra antes de poder
+// evaluar: se le restan los puntos "útiles" hasta que se compensen con
+// clases reales.
+function puntosUtiles(p) { return Math.max(0, puntos(p) - llamadasDe(p).length); }
+// Cumple los requisitos para evaluar: 6 clases útiles (o más, ya
+// descontadas las llamadas de atención sin compensar) Y que una de ellas
+// sea la clase de Procedimientos (es obligatoria, no alcanza con las otras).
+function cumpleRequisitos(p) { return puntosUtiles(p) >= 6 && tieneProcedimientos(p); }
+function escapeAttr(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+function escapeHtml(s) { return escapeAttr(s); }
+
+function dotsFor(persona, tipo, emoji) {
+  if (tipo === 'verde') {
+    // Por cada llamada de atención sin compensar todavía se muestra un ❗
+    // en vez del punto verde; apenas hay una clase real que la tape, se
+    // ve como una bolita verde normal (o el escudo, si es Procedimientos).
+    const llamadas = llamadasDe(persona);
+    const verdes = persona.registros.filter(r => r.tipo === 'verde');
+    const totalSlots = Math.max(llamadas.length, verdes.length);
+    if (totalSlots === 0) return '<span style="color:var(--muted)">—</span>';
+    let html = '';
+    for (let i = 0; i < totalSlots; i++) {
+      if (i < verdes.length) {
+        const r = verdes[i];
+        const emojiUsar = r.turno === TURNO_PROCEDIMIENTOS ? '🛡️' : emoji;
+        html += `<span class="dot" data-tipo="verde" data-registrador="${escapeAttr(r.registrador)}" data-fecha="${escapeAttr(r.fecha)}" data-turno="${escapeAttr(r.turno)}" data-instructor="${escapeAttr(r.instructor || '—')}">${emojiUsar}</span>`;
+      } else {
+        const ll = llamadas[i] || {};
+        html += `<span class="dot dot-llamada" data-tipo="llamada" data-fecha="${escapeAttr(ll.fecha || '—')}" data-motivo="${escapeAttr(ll.motivo || '—')}" data-registrador="${escapeAttr(ll.registrador || '—')}">❗</span>`;
+      }
+    }
+    return html;
+  }
+  const regs = persona.registros.filter(r => r.tipo === tipo);
+  if (!regs.length) return '<span style="color:var(--muted)">—</span>';
+  return regs.map(r => {
+    return `<span class="dot" data-tipo="${tipo}" data-registrador="${escapeAttr(r.registrador)}" data-fecha="${escapeAttr(r.fecha)}" data-turno="${escapeAttr(r.turno)}" data-instructor="${escapeAttr(r.instructor || '—')}">${emoji}</span>`;
+  }).join('');
+}
+
+// El servidor guarda ultimaActualizacion en UTC (ISO); acá se formatea
+// automáticamente en la hora local del navegador de quien la está mirando.
+function fmtUltimaActualizacion() {
+  if (!ultimaActualizacion) return 'Última actualización: —';
+  const d = new Date(ultimaActualizacion);
+  if (isNaN(d.getTime())) return 'Última actualización: —';
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  const hh = String(d.getHours()).padStart(2, '0');
+  const min = String(d.getMinutes()).padStart(2, '0');
+  return `Última actualización: ${dd}/${mm}/${yyyy} ${hh}:${min}`;
+}
+
+// -------------------- render tabla principal --------------------
+const tbody = document.getElementById('tbody');
+const search = document.getElementById('search');
+const orden = document.getElementById('orden');
+const countEl = document.getElementById('count');
+
+function render() {
+  document.getElementById('bannerOffline').classList.toggle('visible', !servidorConectado);
+  const q = search.value.trim().toLowerCase();
+  const filtered = asistencias.filter(a => !q || a.nombre.toLowerCase().includes(q));
+
+  const sortFn = orden.value === 'puntos'
+    ? (a, b) => puntos(b) - puntos(a) || a.nombre.localeCompare(b.nombre, 'es')
+    : orden.value === 'procedimientos'
+    ? (a, b) => (tieneProcedimientos(b) - tieneProcedimientos(a)) || (puntos(b) - puntos(a)) || a.nombre.localeCompare(b.nombre, 'es')
+    : (a, b) => a.nombre.localeCompare(b.nombre, 'es');
+
+  const destacados = filtered.filter(a => cumpleRequisitos(a)).slice().sort(sortFn);
+  const resto = filtered.filter(a => !cumpleRequisitos(a)).slice().sort(sortFn);
+  const ordenados = [...destacados, ...resto];
+
+  countEl.innerHTML = `<span>${filtered.length} persona${filtered.length !== 1 ? 's' : ''}</span><span>${fmtUltimaActualizacion()}</span>`;
+
+  if (ordenados.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-msg">${asistencias.length === 0 ? 'Todavía no hay nadie en la lista.' : 'No se encontraron resultados.'}</div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = ordenados.map((a, i) => {
+    const top = cumpleRequisitos(a);
+    return `
+    <tr class="${top ? 'destacada' : ''}">
+      <td class="rank">${i + 1}</td>
+      <td class="nombre-cell${llamadasDe(a).length > 0 ? ' tiene-llamada' : ''}" data-nombre="${escapeAttr(a.nombre)}">${escapeHtml(a.nombre)}${llamadasDe(a).length > 0 ? '<span class="marca-llamada" title="Tiene llamada(s) de atención registrada(s) — se quita al ascender">!</span>' : ''}${top ? '<span class="badge-lista">✔ LISTO PARA EVALUAR</span>' : ''}</td>
+      <td class="num col-verde">
+        <span class="dots-desktop">${dotsFor(a, 'verde', '🟢')}</span>
+        <span class="count-mobile ${tieneProcedimientos(a) ? 'count-procedimientos' : 'count-verde'}">${verdesDe(a)}</span>
+      </td>
+      <td class="num col-amarillo">
+        <span class="dots-desktop">${dotsFor(a, 'amarillo', '🟡')}</span>
+        <span class="count-mobile count-amarillo">${amarillosDe(a)}</span>
+      </td>
+      <td class="num puntos">${fmtPuntos(puntos(a))}</td>
+      <td class="num col-eliminar"><span class="btn-eliminar-fila" data-nombre="${escapeAttr(a.nombre)}" title="Eliminar registro">✕</span></td>
+    </tr>
+  `;
+  }).join('');
+}
+
+search.addEventListener('input', render);
+orden.addEventListener('change', render);
+
+// -------------------- modal 1: código --------------------
+const modalCodigo = document.getElementById('modalCodigo');
+const inputCodigo = document.getElementById('inputCodigo');
+const codigoError = document.getElementById('codigoError');
+
+let registradorActual = null;
+let registradorActualRol = null;
+let registradorActualDivision = null;
+
+function abrirModalCodigo() {
+  inputCodigo.value = '';
+  codigoError.textContent = '';
+  modalCodigo.classList.remove('hidden');
+  setTimeout(() => inputCodigo.focus(), 50);
+}
+function cerrarModalCodigo() {
+  modalCodigo.classList.add('hidden');
+}
+
+document.getElementById('btnAbrirCodigo').addEventListener('click', () => {
+  if (modoEdicionActivo) {
+    // Ya nos identificamos como administrador para entrar en modo edición:
+    // no hace falta pedir el código de nuevo, se usa ese mismo admin como
+    // quien registra.
+    registradorActual = editorActual;
+    registradorActualRol = 'administrador';
+    registradorActualDivision = null;
+    abrirModalRegistro();
+  } else {
+    abrirModalCodigo();
+  }
+});
+document.getElementById('btnCancelarCodigo').addEventListener('click', cerrarModalCodigo);
+
+async function validarCodigo() {
+  const code = inputCodigo.value.trim();
+  codigoError.textContent = '';
+  let usuario;
+  try {
+    usuario = await validarCodigoEnServidor(code);
+  } catch (e) {
+    codigoError.textContent = e && e.message ? e.message : 'Código inválido. Probá de nuevo.';
+    return;
+  }
+  if (!rolAlcanza(usuario.rol, 'instructor', usuario.division)) {
+    codigoError.textContent = 'Ese código no tiene permisos para registrar asistencias.';
+    return;
+  }
+  registradorActual = usuario.nombre;
+  registradorActualRol = usuario.rol;
+  registradorActualDivision = usuario.division;
+  cerrarModalCodigo();
+  abrirModalRegistro();
+}
+
+document.getElementById('btnContinuarCodigo').addEventListener('click', validarCodigo);
+inputCodigo.addEventListener('keydown', e => { if (e.key === 'Enter') validarCodigo(); });
+
+// -------------------- modal 2: mini lista de registro --------------------
+const modalRegistro = document.getElementById('modalRegistro');
+const registradorInfo = document.getElementById('registradorInfo');
+const inputFecha = document.getElementById('inputFecha');
+const inputTurno = document.getElementById('inputTurno');
+inputTurno.addEventListener('change', () => {
+  actualizarEtiquetaVerde(btnTipoVerde, inputTurno.value === TURNO_PROCEDIMIENTOS);
+  renderMiniLista();
+});
+const inputInstructor = document.getElementById('inputInstructor');
+const inputNombre = document.getElementById('inputNombre');
+const inputRango = document.getElementById('inputRango');
+const listaNombres = document.getElementById('listaNombres');
+const nombreError = document.getElementById('nombreError');
+const miniListaBody = document.getElementById('miniListaBody');
+const miniListaWrap = document.getElementById('miniListaWrap');
+const miniListaEmpty = document.getElementById('miniListaEmpty');
+const btnTipoVerde = document.getElementById('btnTipoVerde');
+const btnTipoAmarillo = document.getElementById('btnTipoAmarillo');
+// Cuando el turno elegido es Procedimientos, la opción "Verde" pasa a
+// mostrarse como el escudo 🛡️ en vez del punto genérico, en cualquiera de
+// los dos formularios que tienen selector de tipo + turno.
+function actualizarEtiquetaVerde(btnVerde, esProcedimientos) {
+  btnVerde.textContent = esProcedimientos ? '🛡️ Procedimientos' : '🟢 Verde';
+}
+
+let tipoSeleccionado = 'verde';
+let miniLista = []; // { nombre, tipo }
+
+function hoyISO() {
+  const d = new Date();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${d.getFullYear()}-${m}-${day}`;
+}
+
+let personasTodasLasListas = []; // [{nombre, rango}] combinado de las 5 listas, para autocompletar y sugerir rango
+
+async function fetchListaGenerica(recurso) {
+  try {
+    const resp = await fetch(API_URL + (API_URL.includes('?') ? '&' : '?') + 'recurso=' + recurso, { method: 'GET' });
+    if (!resp.ok) return [];
+    const data = await resp.json();
+    return Array.isArray(data[recurso]) ? data[recurso] : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+async function cargarPersonasTodasLasListas() {
+  const combinado = asistencias.map(p => ({ nombre: p.nombre, rango: p.rango || RANGO_PROPIO }));
+  const otras = Object.entries(RANGO_A_RECURSO).filter(([, recurso]) => recurso !== RECURSO_PROPIO);
+  const resultados = await Promise.all(otras.map(([rango, recurso]) => fetchListaGenerica(recurso).then(lista => ({ rango, lista }))));
+  for (const { rango, lista } of resultados) {
+    for (const p of lista) combinado.push({ nombre: p.nombre, rango: p.rango || rango });
+  }
+  return combinado;
+}
+
+function poblarListaNombresDesde(personas) {
+  const vistos = new Set();
+  const unicos = personas
+    .slice()
+    .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
+    .filter(p => {
+      const key = p.nombre.toLowerCase();
+      if (vistos.has(key)) return false;
+      vistos.add(key);
+      return true;
+    });
+  listaNombres.innerHTML = unicos.map(p => `<option value="${escapeAttr(p.nombre)}">`).join('');
+}
+
+async function abrirModalRegistro() {
+  registradorInfo.innerHTML = `Registrando como: <b>${escapeHtml(registradorActual)}</b>`;
+  inputFecha.value = hoyISO();
+  inputTurno.innerHTML = opcionesTurno(null, true);
+  inputInstructor.innerHTML = opcionesInstructor(registradorActual, true);
+  inputNombre.value = '';
+  inputRango.value = RANGO_PROPIO;
+  inputRango.disabled = false;
+  nombreError.textContent = '';
+  tipoSeleccionado = 'verde';
+  btnTipoVerde.classList.add('active');
+  btnTipoAmarillo.classList.remove('active');
+  actualizarEtiquetaVerde(btnTipoVerde, inputTurno.value === TURNO_PROCEDIMIENTOS);
+  miniLista = [];
+  // Mostramos de una la propia lista (ya la tenemos en memoria) y de fondo
+  // pedimos las otras 4 para poder buscar/autocompletar a cualquiera, sin
+  // hacer esperar al que está registrando.
+  poblarListaNombresDesde(asistencias.map(p => ({ nombre: p.nombre, rango: p.rango || RANGO_PROPIO })));
+  renderMiniLista();
+  modalRegistro.classList.remove('hidden');
+  setTimeout(() => inputNombre.focus(), 50);
+  personasTodasLasListas = await cargarPersonasTodasLasListas();
+  poblarListaNombresDesde(personasTodasLasListas);
+}
+
+function cerrarModalRegistro() {
+  modalRegistro.classList.add('hidden');
+}
+
+function renderMiniLista() {
+  if (miniLista.length === 0) {
+    miniListaWrap.style.display = 'none';
+    miniListaEmpty.style.display = 'block';
+    return;
+  }
+  miniListaWrap.style.display = 'block';
+  miniListaEmpty.style.display = 'none';
+  const esProcedimientos = inputTurno.value === TURNO_PROCEDIMIENTOS;
+  miniListaBody.innerHTML = miniLista.map((item, i) => `
+    <tr>
+      <td>${escapeHtml(item.nombre)}</td>
+      <td>${escapeHtml(item.rango)}</td>
+      <td>${item.tipo === 'verde' ? (esProcedimientos ? '🛡️ Procedimientos' : '🟢 Verde') : '🟡 Amarillo'}</td>
+      <td><span class="quitar" data-idx="${i}">✕</span></td>
+    </tr>
+  `).join('');
+}
+
+btnTipoVerde.addEventListener('click', () => {
+  tipoSeleccionado = 'verde';
+  btnTipoVerde.classList.add('active');
+  btnTipoAmarillo.classList.remove('active');
+});
+btnTipoAmarillo.addEventListener('click', () => {
+  tipoSeleccionado = 'amarillo';
+  btnTipoAmarillo.classList.add('active');
+  btnTipoVerde.classList.remove('active');
+});
+
+function agregarFila() {
+  const nombre = inputNombre.value.trim();
+  if (!nombre) {
+    nombreError.textContent = 'Escribí o elegí un nombre primero.';
+    return;
+  }
+  nombreError.textContent = '';
+  miniLista.push({ nombre, tipo: tipoSeleccionado, rango: inputRango.value });
+  inputNombre.value = '';
+  inputRango.disabled = false;
+  inputNombre.focus();
+  renderMiniLista();
+}
+
+// Si el nombre escrito/elegido ya existe en alguna de las 5 listas, le
+// autocompletamos su rango conocido y lo bloqueamos (no se puede tocar el
+// rango de alguien que ya tiene uno asignado). Para nombres nuevos el select
+// queda habilitado para elegir el rango a mano.
+inputNombre.addEventListener('input', () => {
+  const val = inputNombre.value.trim().toLowerCase();
+  if (!val) {
+    inputRango.disabled = false;
+    return;
+  }
+  const match = personasTodasLasListas.find(p => p.nombre.toLowerCase() === val);
+  if (match) {
+    inputRango.value = match.rango;
+    inputRango.disabled = true;
+  } else {
+    inputRango.disabled = false;
+  }
+});
+
+document.getElementById('btnAgregarFila').addEventListener('click', agregarFila);
+inputNombre.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); agregarFila(); } });
+
+miniListaBody.addEventListener('click', e => {
+  const el = e.target.closest('.quitar');
+  if (!el) return;
+  const idx = Number(el.dataset.idx);
+  miniLista.splice(idx, 1);
+  renderMiniLista();
+});
+
+document.getElementById('btnCancelarRegistro').addEventListener('click', () => {
+  miniLista = [];
+  cerrarModalRegistro();
+});
+
+const btnConfirmarRegistro = document.getElementById('btnConfirmarRegistro');
+
+btnConfirmarRegistro.addEventListener('click', async () => {
+  if (miniLista.length === 0) {
+    cerrarModalRegistro();
+    return;
+  }
+  const fecha = inputFecha.value || hoyISO();
+  const turno = inputTurno.value;
+  const instructor = inputInstructor.value;
+
+  // Agrupamos por lista destino según el rango elegido en cada fila: una
+  // sola "clase" acá puede terminar repartida entre varias listas si se
+  // cargó gente de distinto rango.
+  const porRecurso = {};
+  for (const item of miniLista) {
+    const recursoDestino = RANGO_A_RECURSO[item.rango] || RECURSO_PROPIO;
+    (porRecurso[recursoDestino] = porRecurso[recursoDestino] || []).push({
+      nombre: item.nombre,
+      tipo: item.tipo,
+      fecha: fecha,
+      turno: turno,
+      instructor: instructor,
+      registrador: registradorActual,
+    });
+  }
+
+  if (!API_URL || API_URL.includes('PEGA_AQUI')) {
+    nombreError.textContent = 'Falta configurar el servidor (API_URL). Revisá SETUP.md.';
+    return;
+  }
+
+  nombreError.textContent = '';
+  btnConfirmarRegistro.disabled = true;
+  btnConfirmarRegistro.textContent = 'Guardando...';
+
+  const fallidos = [];
+  for (const [recursoDestino, entries] of Object.entries(porRecurso)) {
+    try {
+      const resp = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recurso: recursoDestino, entries }),
+      });
+      if (!resp.ok) throw new Error(await errorDe(resp));
+      const data = await resp.json();
+      if (recursoDestino === RECURSO_PROPIO) {
+        aplicarEstado(data);
+        servidorConectado = true;
+      }
+    } catch (e) {
+      fallidos.push(RECURSO_A_RANGO[recursoDestino] || recursoDestino);
+    }
+  }
+
+  btnConfirmarRegistro.disabled = false;
+  btnConfirmarRegistro.textContent = 'Agregar';
+
+  if (fallidos.length) {
+    // Dejamos en la mini-lista solo lo que falló, para que sea fácil
+    // reintentar sin tener que cargar todo de nuevo.
+    miniLista = miniLista.filter(item => fallidos.includes(item.rango));
+    nombreError.textContent = `Se guardó el resto, pero falló para: ${fallidos.join(', ')}. Volvé a intentar con esas personas.`;
+    renderMiniLista();
+    render();
+    return;
+  }
+
+  miniLista = [];
+  render();
+  cerrarModalRegistro();
+});
+
+// -------------------- modal 3: código de edición --------------------
+const modalCodigoEditar = document.getElementById('modalCodigoEditar');
+const inputCodigoEditar = document.getElementById('inputCodigoEditar');
+const codigoEditarError = document.getElementById('codigoEditarError');
+
+let personaEditando = null;
+let editorActual = null;
+let modoEdicionActivo = false;
+
+const modoEdicionBadge = document.getElementById('modoEdicionBadge');
+const modoEdicionNombre = document.getElementById('modoEdicionNombre');
+const btnAbrirEdicionGlobal = document.getElementById('btnAbrirEdicionGlobal');
+const btnGenerarReporte = document.getElementById('btnGenerarReporte');
+const tablaAsistencias = document.getElementById('tablaAsistencias');
+
+function activarModoEdicion(nombreAdmin) {
+  modoEdicionActivo = true;
+  editorActual = nombreAdmin;
+  modoEdicionNombre.textContent = nombreAdmin;
+  modoEdicionBadge.classList.remove('hidden');
+  btnAbrirEdicionGlobal.classList.add('hidden');
+  btnGenerarReporte.classList.remove('hidden');
+  tablaAsistencias.classList.add('modo-edicion');
+}
+
+function salirModoEdicion() {
+  modoEdicionActivo = false;
+  editorActual = null;
+  modoEdicionBadge.classList.add('hidden');
+  btnAbrirEdicionGlobal.classList.remove('hidden');
+  btnGenerarReporte.classList.add('hidden');
+  tablaAsistencias.classList.remove('modo-edicion');
+}
+
+document.getElementById('btnSalirModoEdicion').addEventListener('click', salirModoEdicion);
+
+function abrirModalCodigoEditar() {
+  inputCodigoEditar.value = '';
+  codigoEditarError.textContent = '';
+  modalCodigoEditar.classList.remove('hidden');
+  setTimeout(() => inputCodigoEditar.focus(), 50);
+}
+function cerrarModalCodigoEditar() {
+  modalCodigoEditar.classList.add('hidden');
+}
+
+btnAbrirEdicionGlobal.addEventListener('click', abrirModalCodigoEditar);
+document.getElementById('btnCancelarCodigoEditar').addEventListener('click', cerrarModalCodigoEditar);
+
+async function validarCodigoEditar() {
+  const code = inputCodigoEditar.value.trim();
+  codigoEditarError.textContent = '';
+  let usuario;
+  try {
+    usuario = await validarCodigoEnServidor(code);
+  } catch (e) {
+    codigoEditarError.textContent = e && e.message ? e.message : 'Código inválido. Probá de nuevo.';
+    return;
+  }
+  if (!rolAlcanza(usuario.rol, 'administrador', usuario.division)) {
+    codigoEditarError.textContent = 'Ese código no tiene permisos de administrador.';
+    return;
+  }
+  activarModoEdicion(usuario.nombre);
+  cerrarModalCodigoEditar();
+}
+
+document.getElementById('btnContinuarCodigoEditar').addEventListener('click', validarCodigoEditar);
+inputCodigoEditar.addEventListener('keydown', e => { if (e.key === 'Enter') validarCodigoEditar(); });
+
+// -------------------- eliminar persona (reutilizable: fila con ✕ o popup de editar) --------------------
+async function eliminarPersona(nombre) {
+  const confirmado = confirm(`¿Seguro que querés eliminar TODO el registro de "${nombre}"? Esto borra todos sus puntos verdes y amarillos, y no se puede deshacer.`);
+  if (!confirmado) return false;
+
+  if (!API_URL || API_URL.includes('PEGA_AQUI')) {
+    alert('Falta configurar el servidor (API_URL). Revisá SETUP.md.');
+    return false;
+  }
+
+  try {
+    const resp = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ delete: { nombre, registrador: editorActual } }),
+    });
+    if (!resp.ok) throw new Error(await errorDe(resp));
+    const data = await resp.json();
+    const lista = Array.isArray(data) ? data : (Array.isArray(data.asistencias) ? data.asistencias : []);
+    const sigueExistiendo = lista.some(p => p.nombre.toLowerCase() === nombre.toLowerCase());
+    if (sigueExistiendo) {
+      alert('El servidor no eliminó a la persona. Es probable que falte volver a desplegar worker.js en Cloudflare (Edit code → pegar el archivo actualizado → Deploy).');
+      return false;
+    }
+    aplicarEstado(data);
+    servidorConectado = true;
+    render();
+    return true;
+  } catch (e) {
+    alert('No se pudo eliminar en el servidor. Revisá tu conexión e intentá de nuevo.');
+    return false;
+  }
+}
+
+// delegación: click en el nombre (abre editar) o en la ✕ roja (elimina), solo en modo edición
+tbody.addEventListener('click', async e => {
+  const delBtn = e.target.closest('.btn-eliminar-fila');
+  if (delBtn) {
+    if (!modoEdicionActivo) return;
+    await eliminarPersona(delBtn.dataset.nombre);
+    return;
+  }
+  const nombreCell = e.target.closest('.nombre-cell');
+  if (nombreCell) {
+    personaEditando = nombreCell.dataset.nombre;
+    abrirModalEditar();
+  }
+});
+
+// -------------------- refrescar solo la lista --------------------
+const btnRefrescarLista = document.getElementById('btnRefrescarLista');
+btnRefrescarLista.addEventListener('click', async () => {
+  btnRefrescarLista.disabled = true;
+  const textoOriginal = btnRefrescarLista.textContent;
+  btnRefrescarLista.textContent = '🔄 Refrescando...';
+  await cargarDatosServidor();
+  btnRefrescarLista.disabled = false;
+  btnRefrescarLista.textContent = textoOriginal;
+});
+
+// -------------------- generar reporte de texto --------------------
+// Solo cuenta como "fecha real" un valor tipo YYYY-MM-DD. Los puntos
+// cargados a mano desde el popup de editar quedan con fecha "—" (no se
+// sabe cuándo fue esa clase), así que esas personas no entran en el
+// grupo de "sin asistir hace más de 1 semana" — van al resto de la lista.
+function fechaValidaDe(fechaStr) {
+  if (!fechaStr || !/^\d{4}-\d{2}-\d{2}$/.test(fechaStr)) return null;
+  const d = new Date(fechaStr + 'T00:00:00');
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function ultimaClaseDe(persona) {
+  let ultima = null;
+  persona.registros.forEach(r => {
+    const d = fechaValidaDe(r.fecha);
+    if (d && (!ultima || d > ultima)) ultima = d;
+  });
+  return ultima;
+}
+
+function fmtFechaCorta(d) {
+  return d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function generarReporte() {
+  const ahora = new Date();
+  const haceUnaSemana = new Date(ahora.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+  const completaron = [];
+  const faltaProcedimientos = [];
+  const inactivos = [];
+  const resto = [];
+
+  asistencias.forEach(p => {
+    if (cumpleRequisitos(p)) { completaron.push(p); return; }
+    if (puntos(p) >= 5 && !tieneProcedimientos(p)) { faltaProcedimientos.push(p); return; }
+    const ultima = ultimaClaseDe(p);
+    if (ultima && ultima < haceUnaSemana) { inactivos.push({ persona: p, ultima }); return; }
+    resto.push(p);
+  });
+
+  const alfa = (a, b) => a.nombre.localeCompare(b.nombre, 'es');
+  completaron.sort(alfa);
+  faltaProcedimientos.sort((a, b) => puntos(b) - puntos(a) || alfa(a, b));
+  inactivos.sort((a, b) => a.ultima - b.ultima || alfa(a.persona, b.persona));
+  resto.sort((a, b) => puntos(b) - puntos(a) || alfa(a, b));
+
+  const lineas = [];
+  lineas.push('REPORTE DE ASISTENCIAS — ACADEMIA LAGUNA PD');
+  lineas.push(`Generado: ${ahora.toLocaleDateString('es-AR')} ${ahora.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}`);
+  lineas.push('');
+
+  lineas.push('====================================');
+  lineas.push(`YA COMPLETARON LOS REQUISITOS (6 CLASES + PROCEDIMIENTOS) (${completaron.length})`);
+  lineas.push('====================================');
+  lineas.push(...(completaron.length
+    ? completaron.map((p, i) => `${i + 1}. ${p.nombre} — ${fmtPuntos(puntos(p))} clases`)
+    : ['(nadie todavía)']));
+  lineas.push('');
+
+  lineas.push('====================================');
+  lineas.push(`TIENEN 5 CLASES O MÁS PERO LES FALTA PROCEDIMIENTOS (${faltaProcedimientos.length})`);
+  lineas.push('====================================');
+  lineas.push(...(faltaProcedimientos.length
+    ? faltaProcedimientos.map((p, i) => `${i + 1}. ${p.nombre} — ${fmtPuntos(puntos(p))} clases (falta Procedimientos)`)
+    : ['(nadie en esta situación)']));
+  lineas.push('');
+
+  lineas.push('====================================');
+  lineas.push(`SIN ASISTIR HACE MÁS DE 1 SEMANA (${inactivos.length})`);
+  lineas.push('====================================');
+  lineas.push(...(inactivos.length
+    ? inactivos.map(({ persona, ultima }) => `${persona.nombre} — última clase: ${fmtFechaCorta(ultima)} (${fmtPuntos(puntos(persona))} clases)`)
+    : ['(nadie en esta situación)']));
+  lineas.push('');
+
+  lineas.push('====================================');
+  lineas.push(`RESTO DE LA LISTA — por clases, alfabético en empate (${resto.length})`);
+  lineas.push('====================================');
+  lineas.push(...(resto.length
+    ? resto.map((p, i) => `${i + 1}. ${p.nombre} — ${fmtPuntos(puntos(p))} clases`)
+    : ['(sin más gente)']));
+  lineas.push('');
+  lineas.push('Nota: las personas con puntos cargados/editados manualmente sin fecha ("—") no se pueden ubicar en "sin asistir hace más de 1 semana" porque no se sabe cuándo fue su última clase real; quedan en el resto de la lista.');
+
+  const texto = lineas.join('\n');
+  const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `reporte-asistencias-${ahora.toISOString().slice(0, 10)}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// -------------------- reporte: candidatos a ascenso (semanal) --------------------
+// Historial de evaluaciones: si en algún momento reprobó una evaluación
+// de ascenso, no entra como candidato hasta que se le borre esa entrada
+// del historial (esto NO se hace desde acá, es una decisión de Academia).
+function historialDe(p) { return Array.isArray(p.historialEvaluaciones) ? p.historialEvaluaciones : []; }
+function tieneReprobado(p) { return historialDe(p).some(h => h && h.resultado === 'reprobado'); }
+// Llamadas de atención ACTIVAS = sin compensar todavía con una clase verde
+// real (misma lógica que el ❗ en la tabla: cada clase verde tapa una
+// llamada). Las que ya están compensadas no cuentan en contra.
+function llamadasActivas(p) { return Math.max(0, llamadasDe(p).length - verdesDe(p)); }
+// "Sin llamadas de atención" acá significa CERO llamadas activas (sin
+// compensar). Las ya compensadas no descalifican a la persona como
+// candidata.
+function sinLlamadas(p) { return llamadasActivas(p) === 0; }
+// Marca de aviso (!): tiene alguna llamada de atención (compensada o no)
+// registrada en su historial hace menos de 3 semanas.
+const TRES_SEMANAS_MS = 21 * 24 * 60 * 60 * 1000;
+function tieneLlamadaReciente(p, ahora) {
+  return llamadasDe(p).some(ll => {
+    const d = fechaValidaDe(ll.fecha);
+    return d && (ahora - d) < TRES_SEMANAS_MS;
+  });
+}
+
+const DIAS_ES = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+const MESES_ES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+function fmtFechaLarga(d) {
+  const dia = DIAS_ES[d.getDay()];
+  const mes = MESES_ES[d.getMonth()];
+  const diaMes = String(d.getDate()).padStart(2, '0');
+  const diaCap = dia.charAt(0).toUpperCase() + dia.slice(1);
+  return `${diaCap}, ${diaMes} de ${mes} de ${d.getFullYear()}`;
+}
+
+function generarReporteCandidatos() {
+  const ahora = new Date();
+
+  // Candidatos a Teniente (lista principal): ya cumplen los requisitos
+  // completos (6 clases útiles + Procedimientos), sin llamadas de
+  // atención y sin ninguna evaluación reprobada en el historial.
+  const candidatosTeniente = asistencias.filter(p =>
+    cumpleRequisitos(p) && sinLlamadas(p) && !tieneReprobado(p)
+  );
+
+  // Más de 6 clases asistidas, pendientes de aprobar Procedimientos:
+  // 5.5 asistencias o más, todavía sin Procedimientos, sin llamadas de
+  // atención y sin evaluación reprobada.
+  const pendientesProcedimientos = asistencias.filter(p =>
+    puntos(p) >= 5.5 && !tieneProcedimientos(p) && sinLlamadas(p) && !tieneReprobado(p)
+  );
+
+  const alfa = (a, b) => a.nombre.localeCompare(b.nombre, 'es');
+  candidatosTeniente.sort(alfa);
+  pendientesProcedimientos.sort((a, b) => puntos(b) - puntos(a) || alfa(a, b));
+
+  const bloqueNombres = (lista) => lista.length
+    ? lista.map(p => `> ${p.nombre}${tieneLlamadaReciente(p, ahora) ? ' !' : ''}`).join('\n')
+    : '> Ninguno cumple criterios para ascenso.';
+
+  const lineas = [];
+  lineas.push('# 🌟 **Candidatos a Ascenso | ACADEMIA |**');
+  lineas.push('A continuación se presentan los miembros que **han cumplido con los requisitos mínimos para solicitar su evaluación de ascenso**, por lo que han sido considerados candidatos durante la presente semana.');
+  lineas.push(`**📅 ${fmtFechaLarga(ahora)}** 📅`);
+  lineas.push('## **Candidatos a Teniente**');
+  lineas.push(bloqueNombres(candidatosTeniente));
+  lineas.push('');
+  lineas.push('### **Más de 6 clases asistidas (pendientes de aprobar Procedimientos)**');
+  lineas.push(bloqueNombres(pendientesProcedimientos));
+  lineas.push('');
+  lineas.push('## **Candidatos a Capitán**');
+  lineas.push('> Ninguno cumple criterios para ascenso.');
+  lineas.push('');
+  lineas.push('## **Candidatos a Mayor**');
+  lineas.push('> Ninguno cumple criterios para ascenso.');
+  lineas.push('');
+  lineas.push('❗ *Un ! junto al nombre indica que la persona tiene una llamada de atención registrada en su historial de menos de 3 semanas (aunque ya esté compensada).*');
+  lineas.push('⚠️ *La inclusión en esta lista **no garantiza el ascenso**. La decisión final dependerá del resultado de la evaluación, así como del desempeño, disciplina y cumplimiento de los requisitos establecidos por la Academia Militar.*');
+  lineas.push('📋 **¿Tienes dudas sobre tu asistencia o no apareces en la lista?**  ');
+  lineas.push('Puedes consultar el registro de asistencias en el siguiente enlace en la sección de Academia para verificar que todo esté correcto. Si detectas algún error, comunícate con el personal de Academia.');
+  lineas.push('🔗 **Lista de asistencia:** https://lagunapd.github.io/pd/');
+
+  const texto = lineas.join('\n');
+  const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `candidatos-ascenso-academia-${ahora.toISOString().slice(0, 10)}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// -------------------- modal: elegir tipo de reporte --------------------
+const modalReporte = document.getElementById('modalReporte');
+const reporteBoxInicial = document.getElementById('reporteBoxInicial');
+const reporteBoxEspecifico = document.getElementById('reporteBoxEspecifico');
+const reporteFecha = document.getElementById('reporteFecha');
+const reporteTurno = document.getElementById('reporteTurno');
+const reporteEspecificoError = document.getElementById('reporteEspecificoError');
+
+function abrirModalReporte() {
+  reporteBoxInicial.classList.remove('hidden');
+  reporteBoxEspecifico.classList.add('hidden');
+  reporteEspecificoError.textContent = '';
+  reporteFecha.value = hoyISO();
+  reporteTurno.innerHTML = opcionesTurno(null, false);
+  modalReporte.classList.remove('hidden');
+}
+function cerrarModalReporte() {
+  modalReporte.classList.add('hidden');
+}
+
+document.getElementById('btnReporteTotal').addEventListener('click', () => {
+  cerrarModalReporte();
+  generarReporte();
+});
+document.getElementById('btnReporteCandidatos').addEventListener('click', () => {
+  cerrarModalReporte();
+  generarReporteCandidatos();
+});
+document.getElementById('btnCancelarReporteInicial').addEventListener('click', cerrarModalReporte);
+document.getElementById('btnReporteEspecifico').addEventListener('click', () => {
+  reporteBoxInicial.classList.add('hidden');
+  reporteBoxEspecifico.classList.remove('hidden');
+});
+document.getElementById('btnVolverReporteInicial').addEventListener('click', () => {
+  reporteBoxEspecifico.classList.add('hidden');
+  reporteBoxInicial.classList.remove('hidden');
+});
+document.getElementById('btnGenerarReporteEspecifico').addEventListener('click', () => {
+  const fecha = reporteFecha.value;
+  const turno = reporteTurno.value;
+  if (!fecha) {
+    reporteEspecificoError.textContent = 'Elegí una fecha.';
+    return;
+  }
+  reporteEspecificoError.textContent = '';
+  cerrarModalReporte();
+  generarReporteEspecifico(fecha, turno);
+});
+modalReporte.addEventListener('click', e => { if (e.target === modalReporte) cerrarModalReporte(); });
+
+document.getElementById('btnGenerarReporte').addEventListener('click', abrirModalReporte);
+
+function generarReporteEspecifico(fecha, turno) {
+  const asistentes = [];
+  asistencias.forEach(p => {
+    p.registros.forEach(r => {
+      if (r.fecha === fecha && r.turno === turno) {
+        asistentes.push({ nombre: p.nombre, tipo: r.tipo, instructor: r.instructor || '—' });
+      }
+    });
+  });
+
+  asistentes.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+  const verdes = asistentes.filter(a => a.tipo === 'verde').length;
+  const amarillos = asistentes.filter(a => a.tipo === 'amarillo').length;
+
+  const esProcedimientos = turno === TURNO_PROCEDIMIENTOS;
+  const emojiVerde = esProcedimientos ? '🛡️' : '🟢';
+
+  const ahora = new Date();
+  const lineas = [];
+  lineas.push('REPORTE DE CLASE ESPECÍFICA — ACADEMIA LAGUNA PD');
+  lineas.push(`Generado: ${ahora.toLocaleDateString('es-AR')} ${ahora.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}`);
+  lineas.push(`Fecha de la clase: ${fecha}`);
+  lineas.push(`Turno: ${turno}`);
+  lineas.push('');
+  lineas.push('====================================');
+  lineas.push(`ASISTENTES (${asistentes.length}) — ${emojiVerde} ${verdes} · 🟡 ${amarillos}`);
+  lineas.push('====================================');
+  lineas.push(...(asistentes.length
+    ? asistentes.map(a => `${a.tipo === 'verde' ? emojiVerde : '🟡'} ${a.nombre}`)
+    : ['(nadie registrado en esta fecha/turno)']));
+
+  const texto = lineas.join('\n');
+  const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `reporte-${fecha}-${turno.replace(/\s+/g, '-')}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// -------------------- modal 4: editar valores --------------------
+const modalEditar = document.getElementById('modalEditar');
+const editarInfo = document.getElementById('editarInfo');
+const editarError = document.getElementById('editarError');
+const btnGuardarEditar = document.getElementById('btnGuardarEditar');
+const inputEditarNombre = document.getElementById('inputEditarNombre');
+const clasesTitulo = document.getElementById('clasesTitulo');
+const clasesListaBody = document.getElementById('clasesListaBody');
+const clasesListaWrap = document.getElementById('clasesListaWrap');
+const clasesListaEmpty = document.getElementById('clasesListaEmpty');
+const clasesAgregarRow = document.getElementById('clasesAgregarRow');
+const clasesAgregarRow2 = document.getElementById('clasesAgregarRow2');
+const clasesRenombrarRow = document.getElementById('clasesRenombrarRow');
+const clasesAccionesEdicion = document.getElementById('clasesAccionesEdicion');
+const clasesAccionesVista = document.getElementById('clasesAccionesVista');
+const clasesAccionHeader = document.getElementById('clasesAccionHeader');
+const btnAbrirEvaluacion = document.getElementById('btnAbrirEvaluacion');
+const btnEvaluarVista = document.getElementById('btnEvaluarVista');
+const claseNuevaFecha = document.getElementById('claseNuevaFecha');
+const claseNuevaTurno = document.getElementById('claseNuevaTurno');
+claseNuevaTurno.addEventListener('change', () => {
+  actualizarEtiquetaVerde(document.getElementById('claseNuevaBtnVerde'), claseNuevaTurno.value === TURNO_PROCEDIMIENTOS);
+});
+const claseNuevaInstructor = document.getElementById('claseNuevaInstructor');
+const btnAgregarClase = document.getElementById('btnAgregarClase');
+const llamadasAgregarRow = document.getElementById('llamadasAgregarRow');
+const llamadasListaBody = document.getElementById('llamadasListaBody');
+const llamadasListaWrap = document.getElementById('llamadasListaWrap');
+const llamadasListaEmpty = document.getElementById('llamadasListaEmpty');
+const llamadasAccionHeader = document.getElementById('llamadasAccionHeader');
+const llamadaNuevaFecha = document.getElementById('llamadaNuevaFecha');
+const llamadaNuevoMotivo = document.getElementById('llamadaNuevoMotivo');
+const btnAgregarLlamada = document.getElementById('btnAgregarLlamada');
+
+let clasesLocal = []; // copia editable de persona.registros mientras el modal está abierto
+let llamadasLocal = []; // copia editable de persona.llamadas mientras el modal está abierto
+let claseNuevoTipo = 'verde';
+
+const TURNOS_CLASE = ["Primera Clase", "Segunda Clase", "Tercera Clase", "Cuarta Clase", "Quinta Clase", TURNO_PROCEDIMIENTOS];
+// restringir = true: si quien registra no llega a evaluador (es instructor
+// común), no puede elegir "Procedimientos" — esa clase solo la registran
+// evaluadores o administradores. Los administradores (por ejemplo, en el
+// modo edición) siempre ven la lista completa.
+function opcionesTurno(seleccionado, restringir) {
+  const disponibles = (restringir && !rolAlcanza(registradorActualRol, 'evaluador', registradorActualDivision))
+    ? TURNOS_CLASE.filter(t => t !== TURNO_PROCEDIMIENTOS)
+    : TURNOS_CLASE;
+  return disponibles.map(t => `<option value="${escapeAttr(t)}" ${t === seleccionado ? 'selected' : ''}>${t}</option>`).join('');
+}
+// restringir = true: si quien registra no es administrador, solo puede
+// elegir su propio nombre como instructor (no puede atribuirle la clase a
+// otra persona). Los administradores (por ejemplo, en el modo edición)
+// siempre ven la lista completa.
+function opcionesInstructor(seleccionado, restringir) {
+  if (restringir && registradorActualRol && registradorActualRol !== 'administrador') {
+    return `<option value="${escapeAttr(registradorActual)}" selected>${escapeHtml(registradorActual)}</option>`;
+  }
+  // NOMBRES_INSTRUCTORES y NOMBRES_EVALUADORES vienen de codigos.js — se
+  // muestran en dos grupos separados para que quede claro quién es quién.
+  const opcion = n => `<option value="${escapeAttr(n)}" ${n === seleccionado ? 'selected' : ''}>${n}</option>`;
+  return `<optgroup label="Instructores">${NOMBRES_INSTRUCTORES.map(opcion).join('')}</optgroup>`
+    + `<optgroup label="Evaluadores">${NOMBRES_EVALUADORES.map(opcion).join('')}</optgroup>`;
+}
+
+// Calcula si la persona que se está editando cumple los requisitos para
+// evaluar. Se usa tanto para el título/aviso de los botones como para el
+// chequeo real en validarCodigoEvaluar() — ahí es donde un administrador
+// puede saltarse el requisito, cosa que un botón deshabilitado no permite.
+function estadoRequisitosEvaluacion() {
+  const personaReal = asistencias.find(a => a.nombre.toLowerCase() === (personaEditando || '').toLowerCase());
+  const cantLlamadas = personaReal ? llamadasDe(personaReal).length : 0;
+  const puntosActuales = puntos({ registros: clasesLocal });
+  const puntosUtilesActuales = Math.max(0, puntosActuales - cantLlamadas);
+  const tieneProc = tieneProcedimientos({ registros: clasesLocal });
+  const cumple = puntosUtilesActuales >= 6 && tieneProc;
+  let tituloBoton = '';
+  if (!cumple) {
+    const avisoLlamadas = cantLlamadas > 0 ? ` (tiene ${cantLlamadas} llamada${cantLlamadas !== 1 ? 's' : ''} de atención sin compensar)` : '';
+    if (puntosUtilesActuales < 6 && !tieneProc) {
+      tituloBoton = `Necesita 6 clases (lleva ${fmtPuntos(puntosUtilesActuales)} útiles de ${fmtPuntos(puntosActuales)}) y la clase de Procedimientos para poder evaluar${avisoLlamadas}.`;
+    } else if (puntosUtilesActuales < 6) {
+      tituloBoton = `Necesita 6 clases útiles para poder evaluar (lleva ${fmtPuntos(puntosUtilesActuales)} de ${fmtPuntos(puntosActuales)})${avisoLlamadas}.`;
+    } else {
+      tituloBoton = 'Le falta la clase de Procedimientos para poder evaluar.';
+    }
+  }
+  return { cumple, tituloBoton };
+}
+
+function actualizarBotonEvaluacion() {
+  const { cumple, tituloBoton } = estadoRequisitosEvaluacion();
+  // Ya no deshabilitamos los botones por no cumplir los requisitos: un
+  // administrador puede evaluar igual. El título sigue avisando qué falta.
+  if (btnAbrirEvaluacion) {
+    btnAbrirEvaluacion.disabled = false;
+    btnAbrirEvaluacion.title = cumple ? '' : `${tituloBoton} Como administrador, podés evaluar igual.`;
+  }
+  if (btnEvaluarVista) {
+    btnEvaluarVista.disabled = false;
+    btnEvaluarVista.title = tituloBoton;
+  }
+}
+
+function renderClasesLista(editable) {
+  actualizarBotonEvaluacion();
+  if (clasesLocal.length === 0) {
+    clasesListaWrap.style.display = 'none';
+    clasesListaEmpty.style.display = 'block';
+    return;
+  }
+  clasesListaWrap.style.display = 'block';
+  clasesListaEmpty.style.display = 'none';
+  clasesAccionHeader.textContent = editable ? '' : '';
+  clasesListaBody.innerHTML = clasesLocal.map((r, i) => {
+    const emoji = r.tipo === 'amarillo' ? '🟡' : (r.turno === TURNO_PROCEDIMIENTOS ? '🛡️' : '🟢');
+    const puntoCell = editable
+      ? `<span class="clase-punto-toggle" data-idx="${i}" title="Tocá para cambiar">${emoji}</span>`
+      : `<span>${emoji}</span>`;
+    const accionCell = editable
+      ? `<span class="clase-quitar" data-idx="${i}">✕</span>`
+      : '';
+    const fechaVal = r.fecha && r.fecha !== '—' ? r.fecha : '';
+    const fechaCell = editable
+      ? `<input type="date" class="clase-campo-fecha" data-idx="${i}" value="${escapeAttr(fechaVal)}">`
+      : escapeHtml(r.fecha || '—');
+    const turnoCell = editable
+      ? `<select class="clase-campo-turno" data-idx="${i}">${opcionesTurno(r.turno, false)}</select>`
+      : escapeHtml(r.turno || '—');
+    const instructorCell = editable
+      ? `<select class="clase-campo-instructor" data-idx="${i}">${opcionesInstructor(r.instructor, false)}</select>`
+      : escapeHtml(r.instructor || '—');
+    return `<tr>
+      <td>${fechaCell}</td>
+      <td>${turnoCell}</td>
+      <td>${instructorCell}</td>
+      <td>${puntoCell}</td>
+      <td>${accionCell}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderLlamadasLista(editable) {
+  llamadasAccionHeader.textContent = '';
+  if (llamadasLocal.length === 0) {
+    llamadasListaWrap.style.display = 'none';
+    llamadasListaEmpty.style.display = 'block';
+    return;
+  }
+  llamadasListaWrap.style.display = 'block';
+  llamadasListaEmpty.style.display = 'none';
+  llamadasListaBody.innerHTML = llamadasLocal.map((l, i) => `
+    <tr>
+      <td>${escapeHtml(l.fecha || '—')}</td>
+      <td>${escapeHtml(l.motivo || '—')}</td>
+      <td>${escapeHtml(l.registrador || '—')}</td>
+      <td>${editable ? `<span class="quitar" data-idx="${i}" style="cursor:pointer;color:var(--red);">✕</span>` : ''}</td>
+    </tr>
+  `).join('');
+}
+
+llamadasListaBody.addEventListener('click', e => {
+  const btn = e.target.closest('.quitar');
+  if (!btn || !modoEdicionActivo) return;
+  llamadasLocal.splice(Number(btn.dataset.idx), 1);
+  renderLlamadasLista(true);
+});
+
+btnAgregarLlamada.addEventListener('click', () => {
+  llamadasLocal.push({
+    fecha: llamadaNuevaFecha.value || hoyISO(),
+    motivo: llamadaNuevoMotivo.value.trim(),
+    registrador: editorActual,
+  });
+  llamadaNuevoMotivo.value = '';
+  renderLlamadasLista(true);
+});
+
+function abrirModalEditar() {
+  const persona = asistencias.find(a => a.nombre.toLowerCase() === personaEditando.toLowerCase());
+  clasesLocal = persona ? persona.registros.slice() : [];
+  llamadasLocal = persona ? llamadasDe(persona).slice() : [];
+  const rangoTexto = (persona && persona.rango) || '—';
+
+  const editable = modoEdicionActivo;
+  clasesTitulo.textContent = editable ? `Editar clases de ${personaEditando}` : `Clases de ${personaEditando}`;
+  editarInfo.innerHTML = editable
+    ? `Administrador: <b>${escapeHtml(editorActual)}</b> · Rango: <b>${escapeHtml(rangoTexto)}</b>`
+    : `Historial de clases (solo lectura) · Rango: <b>${escapeHtml(rangoTexto)}</b>`;
+  editarError.textContent = '';
+
+  clasesAgregarRow.classList.toggle('hidden', !editable);
+  clasesAgregarRow2.classList.toggle('hidden', !editable);
+  clasesRenombrarRow.classList.toggle('hidden', !editable);
+  clasesAccionesEdicion.classList.toggle('hidden', !editable);
+  clasesAccionesVista.classList.toggle('hidden', editable);
+  llamadasAgregarRow.classList.toggle('hidden', !editable);
+
+  if (editable) {
+    inputEditarNombre.value = personaEditando;
+    claseNuevaFecha.value = hoyISO();
+    claseNuevaTurno.innerHTML = opcionesTurno(null, false);
+    claseNuevaInstructor.innerHTML = opcionesInstructor(null, false);
+    claseNuevoTipo = 'verde';
+    document.getElementById('claseNuevaBtnVerde').classList.add('active');
+    document.getElementById('claseNuevaBtnAmarillo').classList.remove('active');
+    actualizarEtiquetaVerde(document.getElementById('claseNuevaBtnVerde'), claseNuevaTurno.value === TURNO_PROCEDIMIENTOS);
+    llamadaNuevaFecha.value = hoyISO();
+    llamadaNuevoMotivo.value = '';
+  }
+
+  renderClasesLista(editable);
+  renderLlamadasLista(editable);
+  modalEditar.classList.remove('hidden');
+}
+function cerrarModalEditar() {
+  modalEditar.classList.add('hidden');
+}
+
+document.getElementById('claseNuevaBtnVerde').addEventListener('click', () => {
+  claseNuevoTipo = 'verde';
+  document.getElementById('claseNuevaBtnVerde').classList.add('active');
+  document.getElementById('claseNuevaBtnAmarillo').classList.remove('active');
+});
+document.getElementById('claseNuevaBtnAmarillo').addEventListener('click', () => {
+  claseNuevoTipo = 'amarillo';
+  document.getElementById('claseNuevaBtnAmarillo').classList.add('active');
+  document.getElementById('claseNuevaBtnVerde').classList.remove('active');
+});
+
+btnAgregarClase.addEventListener('click', () => {
+  clasesLocal.push({
+    tipo: claseNuevoTipo,
+    fecha: claseNuevaFecha.value || hoyISO(),
+    turno: claseNuevaTurno.value,
+    instructor: claseNuevaInstructor.value,
+    registrador: `Agregado por ${editorActual}`,
+  });
+  renderClasesLista(true);
+});
+
+clasesListaBody.addEventListener('click', e => {
+  const toggle = e.target.closest('.clase-punto-toggle');
+  if (toggle) {
+    const idx = Number(toggle.dataset.idx);
+    clasesLocal[idx].tipo = clasesLocal[idx].tipo === 'verde' ? 'amarillo' : 'verde';
+    renderClasesLista(true);
+    return;
+  }
+  const quitar = e.target.closest('.clase-quitar');
+  if (quitar) {
+    const idx = Number(quitar.dataset.idx);
+    clasesLocal.splice(idx, 1);
+    renderClasesLista(true);
+  }
+});
+
+clasesListaBody.addEventListener('change', e => {
+  const fechaInput = e.target.closest('.clase-campo-fecha');
+  if (fechaInput) {
+    clasesLocal[Number(fechaInput.dataset.idx)].fecha = fechaInput.value || '—';
+    return;
+  }
+  const turnoSelect = e.target.closest('.clase-campo-turno');
+  if (turnoSelect) {
+    clasesLocal[Number(turnoSelect.dataset.idx)].turno = turnoSelect.value;
+    renderClasesLista(true);
+    return;
+  }
+  const instructorSelect = e.target.closest('.clase-campo-instructor');
+  if (instructorSelect) {
+    clasesLocal[Number(instructorSelect.dataset.idx)].instructor = instructorSelect.value;
+  }
+});
+
+document.getElementById('btnCerrarVistaClases').addEventListener('click', cerrarModalEditar);
+document.getElementById('btnCancelarEditar').addEventListener('click', cerrarModalEditar);
+
+const btnEliminarRegistro = document.getElementById('btnEliminarRegistro');
+btnEliminarRegistro.addEventListener('click', async () => {
+  btnEliminarRegistro.disabled = true;
+  btnGuardarEditar.disabled = true;
+  btnEliminarRegistro.textContent = 'Eliminando...';
+  const ok = await eliminarPersona(personaEditando);
+  btnEliminarRegistro.disabled = false;
+  btnGuardarEditar.disabled = false;
+  btnEliminarRegistro.textContent = '🗑 Eliminar Registro';
+  if (ok) cerrarModalEditar();
+});
+
+// cerrar modales tocando el fondo oscuro (ya existen las 4 variables acá)
+[modalCodigo, modalRegistro, modalCodigoEditar, modalEditar].forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.add('hidden'); });
+});
+
+// -------------------- modal 5: enviar a evaluación --------------------
+const modalEvaluacion = document.getElementById('modalEvaluacion');
+const evaluacionInfo = document.getElementById('evaluacionInfo');
+const evaluacionEvaluador = document.getElementById('evaluacionEvaluador');
+const evaluacionObservaciones = document.getElementById('evaluacionObservaciones');
+const evaluacionError = document.getElementById('evaluacionError');
+const btnResultadoAprobado = document.getElementById('btnResultadoAprobado');
+const btnResultadoReprobado = document.getElementById('btnResultadoReprobado');
+const btnGuardarEvaluacion = document.getElementById('btnGuardarEvaluacion');
+let resultadoEvaluacion = 'aprobado';
+let evaluadorIdentificado = null;
+let evaluadorIdentificadoRol = null;
+
+btnResultadoAprobado.addEventListener('click', () => {
+  resultadoEvaluacion = 'aprobado';
+  btnResultadoAprobado.classList.add('active');
+  btnResultadoReprobado.classList.remove('active');
+});
+btnResultadoReprobado.addEventListener('click', () => {
+  resultadoEvaluacion = 'reprobado';
+  btnResultadoReprobado.classList.add('active');
+  btnResultadoAprobado.classList.remove('active');
+});
+
+function abrirModalEvaluacion() {
+  evaluacionInfo.innerHTML = `Evaluando a <b>${escapeHtml(personaEditando)}</b>`;
+  resultadoEvaluacion = 'aprobado';
+  btnResultadoAprobado.classList.add('active');
+  btnResultadoReprobado.classList.remove('active');
+  evaluacionEvaluador.innerHTML = opcionesEvaluadorAsistencia(evaluadorIdentificado, true);
+  evaluacionObservaciones.value = '';
+  evaluacionError.textContent = '';
+  modalEvaluacion.classList.remove('hidden');
+}
+function cerrarModalEvaluacion() {
+  modalEvaluacion.classList.add('hidden');
+}
+
+// -------------------- modal 4b: código de evaluador --------------------
+const modalCodigoEvaluar = document.getElementById('modalCodigoEvaluar');
+const inputCodigoEvaluar = document.getElementById('inputCodigoEvaluar');
+const codigoEvaluarError = document.getElementById('codigoEvaluarError');
+
+function abrirModalCodigoEvaluar() {
+  inputCodigoEvaluar.value = '';
+  codigoEvaluarError.textContent = '';
+  modalCodigoEvaluar.classList.remove('hidden');
+  setTimeout(() => inputCodigoEvaluar.focus(), 50);
+}
+function cerrarModalCodigoEvaluar() {
+  modalCodigoEvaluar.classList.add('hidden');
+}
+
+async function validarCodigoEvaluar() {
+  const code = inputCodigoEvaluar.value.trim();
+  codigoEvaluarError.textContent = '';
+  let usuario;
+  try {
+    usuario = await validarCodigoEnServidor(code);
+  } catch (e) {
+    codigoEvaluarError.textContent = e && e.message ? e.message : 'Código inválido. Probá de nuevo.';
+    return;
+  }
+  if (!rolAlcanza(usuario.rol, 'evaluador', usuario.division)) {
+    codigoEvaluarError.textContent = 'Ese código no tiene permisos para evaluar.';
+    return;
+  }
+  // Un evaluador (no administrador) todavía necesita que la persona cumpla
+  // los requisitos. Un administrador puede evaluar aunque no los cumpla.
+  if (usuario.rol !== 'administrador') {
+    const { cumple, tituloBoton } = estadoRequisitosEvaluacion();
+    if (!cumple) {
+      codigoEvaluarError.textContent = tituloBoton || 'Todavía no cumple los requisitos para evaluar.';
+      return;
+    }
+  }
+  evaluadorIdentificado = usuario.nombre;
+  evaluadorIdentificadoRol = usuario.rol;
+  cerrarModalCodigoEvaluar();
+  abrirModalEvaluacion();
+}
+
+document.getElementById('btnContinuarCodigoEvaluar').addEventListener('click', validarCodigoEvaluar);
+document.getElementById('btnCancelarCodigoEvaluar').addEventListener('click', cerrarModalCodigoEvaluar);
+inputCodigoEvaluar.addEventListener('keydown', e => { if (e.key === 'Enter') validarCodigoEvaluar(); });
+modalCodigoEvaluar.addEventListener('click', e => { if (e.target === modalCodigoEvaluar) cerrarModalCodigoEvaluar(); });
+
+// Desde la vista de solo lectura (evaluadores), pide código antes de evaluar.
+// Si ya estás en modo edición de administrador, va directo al formulario.
+if (btnEvaluarVista) {
+  btnEvaluarVista.addEventListener('click', () => {
+    if (modoEdicionActivo) {
+      evaluadorIdentificado = editorActual;
+      evaluadorIdentificadoRol = 'administrador';
+      abrirModalEvaluacion();
+    } else {
+      abrirModalCodigoEvaluar();
+    }
+  });
+}
+
+document.getElementById('btnAbrirEvaluacion').addEventListener('click', () => {
+  evaluadorIdentificado = editorActual;
+  evaluadorIdentificadoRol = 'administrador';
+  abrirModalEvaluacion();
+});
+document.getElementById('btnCancelarEvaluacion').addEventListener('click', cerrarModalEvaluacion);
+modalEvaluacion.addEventListener('click', e => { if (e.target === modalEvaluacion) cerrarModalEvaluacion(); });
+
+btnGuardarEvaluacion.addEventListener('click', async () => {
+  if (!API_URL || API_URL.includes('PEGA_AQUI')) {
+    evaluacionError.textContent = 'Falta configurar el servidor (API_URL). Revisá SETUP.md.';
+    return;
+  }
+  evaluacionError.textContent = '';
+  btnGuardarEvaluacion.disabled = true;
+  btnGuardarEvaluacion.textContent = 'Enviando...';
+  const nombreEvaluado = personaEditando;
+  try {
+    const resp = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        evaluarAscenso: {
+          nombre: nombreEvaluado,
+          resultado: resultadoEvaluacion,
+          evaluador: evaluacionEvaluador.value,
+          observaciones: evaluacionObservaciones.value.trim(),
+          fecha: hoyISO(),
+        },
+      }),
+    });
+    if (!resp.ok) throw new Error(await errorDe(resp));
+    aplicarEstado(await resp.json());
+
+    servidorConectado = true;
+    render();
+    cerrarModalEvaluacion();
+    cerrarModalEditar();
+    if (resultadoEvaluacion === 'aprobado') {
+      alert(`${nombreEvaluado} fue aprobado/a y pasó a la lista de Tenientes (con el rango de Teniente asignado automáticamente).`);
+    } else {
+      alert(`${nombreEvaluado} fue reprobado/a: se queda en Asistencias y se le puede volver a evaluar más adelante.`);
+    }
+  } catch (e) {
+    evaluacionError.textContent = e && e.message ? e.message : 'No se pudo enviar la evaluación. Intentá de nuevo.';
+  } finally {
+    btnGuardarEvaluacion.disabled = false;
+    btnGuardarEvaluacion.textContent = 'Enviar a Tenientes';
+  }
+});
+
+btnGuardarEditar.addEventListener('click', async () => {
+  if (!API_URL || API_URL.includes('PEGA_AQUI')) {
+    editarError.textContent = 'Falta configurar el servidor (API_URL). Revisá SETUP.md.';
+    return;
+  }
+  const nombreNuevo = inputEditarNombre.value.trim();
+  if (!nombreNuevo) {
+    editarError.textContent = 'El nombre no puede quedar vacío.';
+    return;
+  }
+  editarError.textContent = '';
+  btnGuardarEditar.disabled = true;
+  btnGuardarEditar.textContent = 'Guardando...';
+  try {
+    const resp = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        edit: {
+          nombre: personaEditando,
+          nombreNuevo: nombreNuevo,
+          registros: clasesLocal,
+          llamadas: llamadasLocal,
+          registrador: editorActual,
+        },
+      }),
+    });
+    if (!resp.ok) throw new Error(await errorDe(resp));
+    aplicarEstado(await resp.json());
+    servidorConectado = true;
+    personaEditando = nombreNuevo;
+    render();
+    cerrarModalEditar();
+  } catch (e) {
+    editarError.textContent = e && e.message ? e.message : 'No se pudo guardar en el servidor. Intentá de nuevo.';
+  } finally {
+    btnGuardarEditar.disabled = false;
+    btnGuardarEditar.textContent = 'Guardar';
+  }
+});
+
+// -------------------- tooltip con el tema de la página --------------------
+const customTooltip = document.getElementById('customTooltip');
+
+function posicionarTooltip(e) {
+  const pad = 14;
+  const anchoTip = 230;
+  let x = e.clientX + pad;
+  let y = e.clientY + pad;
+  if (x + anchoTip > window.innerWidth) x = e.clientX - anchoTip - pad;
+  if (y + 80 > window.innerHeight) y = e.clientY - 80 - pad;
+  customTooltip.style.left = Math.max(4, x) + 'px';
+  customTooltip.style.top = Math.max(4, y) + 'px';
+}
+
+document.addEventListener('mouseover', e => {
+  const dot = e.target.closest('.dot');
+  if (!dot) return;
+  const tipo = dot.dataset.tipo;
+  if (tipo === 'llamada') {
+    customTooltip.innerHTML = `
+      <div class="tt-tipo llamada">❗ Llamada de atención</div>
+      <div class="tt-registrador">Registró: ${escapeHtml(dot.dataset.registrador)}</div>
+      <div class="tt-detalle">${escapeHtml(dot.dataset.fecha)}</div>
+      <div class="tt-detalle">Motivo: ${escapeHtml(dot.dataset.motivo || '—')}</div>
+      <div class="tt-detalle">Se compensa con una clase verde extra.</div>
+    `;
+    customTooltip.style.display = 'block';
+    posicionarTooltip(e);
+    return;
+  }
+  const esProcedimientos = dot.dataset.turno === TURNO_PROCEDIMIENTOS;
+  const etiqueta = esProcedimientos
+    ? '🛡️ Procedimientos'
+    : (tipo === 'verde' ? '🟢 Verde' : '🟡 Amarillo');
+  customTooltip.innerHTML = `
+    <div class="tt-tipo ${tipo}">${etiqueta}</div>
+    <div class="tt-registrador">Registró: ${escapeHtml(dot.dataset.registrador)}</div>
+    <div class="tt-detalle">${escapeHtml(dot.dataset.fecha)} · ${escapeHtml(dot.dataset.turno)}</div>
+    <div class="tt-detalle">Instructor: ${escapeHtml(dot.dataset.instructor)}</div>
+  `;
+  customTooltip.style.display = 'block';
+  posicionarTooltip(e);
+});
+document.addEventListener('mousemove', e => {
+  if (customTooltip.style.display === 'block') posicionarTooltip(e);
+});
+document.addEventListener('mouseout', e => {
+  if (e.target.closest('.dot')) customTooltip.style.display = 'none';
+});
+
+// -------------------- avisarle al padre (iframe) la altura real --------------------
+const modalesTodos = [modalCodigo, modalRegistro, modalCodigoEditar, modalEditar, modalReporte, modalCodigoEvaluar, modalEvaluacion];
+
+function avisarAltura() {
+  if (window.parent === window) return;
+  let alto = document.documentElement.scrollHeight;
+
+  // Los modales son position:fixed, así que no afectan el scrollHeight del body.
+  // Si hay uno abierto, medimos su caja real y le sumamos margen del overlay.
+  const modalAbierto = modalesTodos.find(m => m && !m.classList.contains('hidden'));
+  if (modalAbierto) {
+    const caja = modalAbierto.querySelector('.modal-box');
+    if (caja) {
+      alto = Math.max(alto, caja.scrollHeight + 70);
+    }
+  }
+
+  window.parent.postMessage({ tipo: 'asistencias-alto', alto: alto }, '*');
+}
+
+const alturaObserver = new ResizeObserver(() => avisarAltura());
+alturaObserver.observe(document.body);
+
+// Detecta cuándo se abre/cierra cualquier modal (cambia la clase "hidden")
+// para recalcular la altura, incluso cuando se cierra tocando el fondo.
+const modalObserver = new MutationObserver(() => {
+  avisarAltura();
+});
+modalesTodos.forEach(m => {
+  if (m) modalObserver.observe(m, { attributes: true, attributeFilter: ['class'] });
+});
+
+// Fuerza el selector nativo de fecha con un click (por si el ícono no
+// responde en algún navegador/versión de escritorio).
+function habilitarPickerNativo(input) {
+  if (!input) return;
+  input.addEventListener('click', () => {
+    if (typeof input.showPicker === 'function') {
+      try { input.showPicker(); } catch (e) { /* requiere gesto directo del usuario; si falla, no rompe nada */ }
+    }
+  });
+}
+[inputFecha, claseNuevaFecha, reporteFecha].forEach(habilitarPickerNativo);
+
+cargarDatosServidor();
+window.addEventListener('load', avisarAltura);
+setInterval(cargarDatosServidor, 20000); // refresca cada 20s para ver registros de otras personas
+
+/* ============================================================
+   Posicionar el modal dentro de la franja visible cuando esta página
+   vive adentro del iframe de index.html (si no, position:fixed ya
+   funciona solo). Ya NO bloqueamos el scroll de fondo mientras un
+   modal está abierto — se sacó a pedido.
+   ============================================================ */
+(function () {
+  const esEmbebido = !!(window.top && window.top !== window);
+  if (!esEmbebido) return;
+
+  let ultimaFranja = { top: 0, alto: window.innerHeight };
+  window.addEventListener('message', e => {
+    if (e.data && e.data.tipo === 'franja-visible') {
+      ultimaFranja = { top: e.data.top, alto: e.data.alto };
+    }
+  });
+  try { window.parent.postMessage({ tipo: 'pedir-franja-visible' }, '*'); } catch (e) { /* ignorar */ }
+
+  function posicionarModal(el) {
+    el.style.position = 'absolute';
+    el.style.top = ultimaFranja.top + 'px';
+    el.style.left = '0';
+    el.style.right = '0';
+    el.style.height = ultimaFranja.alto + 'px';
+    el.style.margin = '0';
+  }
+  function despejarModal(el) {
+    el.style.position = '';
+    el.style.top = '';
+    el.style.left = '';
+    el.style.right = '';
+    el.style.height = '';
+    el.style.margin = '';
+  }
+
+  const obsEmb = new MutationObserver(mutList => {
+    for (const m of mutList) {
+      const el = m.target;
+      if (!el || el.nodeType !== 1 || !/modal-overlay/.test(el.className)) continue;
+      const eraOculto = (m.oldValue || '').split(' ').includes('hidden');
+      const esOculto = el.classList.contains('hidden');
+      if (eraOculto && !esOculto) {
+        posicionarModal(el);
+      } else if (!eraOculto && esOculto) {
+        despejarModal(el);
+      }
+    }
+  });
+  obsEmb.observe(document.body, { attributes: true, attributeFilter: ['class'], attributeOldValue: true, subtree: true });
+})();
+</script>
+
+</body>
+</html>
